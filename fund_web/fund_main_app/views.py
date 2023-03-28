@@ -15,6 +15,8 @@ from chinese_calendar import is_workday
 import datetime
 from bs4 import BeautifulSoup
 
+from fund_web.settings import DB_PASSWORD,DB_IPADDRESS
+
 
 # Create your views here.
 def _fund_floating():
@@ -106,7 +108,7 @@ def _get_textvalue():
 class fund_db(object):
     @staticmethod
     def db():
-        db = pymysql.connect(host="127.0.0.1", user="root", passwd="123456", database="fund",
+        db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
                              cursorclass=pymysql.cursors.DictCursor)
         cursor = db.cursor()
         return db, cursor
