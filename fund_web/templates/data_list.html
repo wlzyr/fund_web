@@ -1,0 +1,108 @@
+{% extends 'blank.html' %}
+{% block script %}
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+{% endblock %}
+{% block data %}
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>基金ID</th>
+                <th>加仓</th>
+                <th>时间</th>
+                <th>持仓人</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in journal %}
+            <tr>
+                <td>{{ i.id }}</td>
+                <td>{{i.fund_id}}</td>
+                <td>{{i.cr_change}}</td>
+                <td>{{i.cr_date}}</td>
+                <td>{{i.ch_name}}</td>
+                <td><a url="{% url 'delete' table_name  i.id %}" class="btn btn-danger btn-icon-split"><span
+                        class="text">删除</span></a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% if table_name == "sum_journal" %}
+    <div class="row">
+        <div class="col-sm-12 col-md-5">
+            <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing {{start_page}} to
+                {{end_page}} of {{sumnum}}
+                entries
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-7">
+            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                <ul class="pagination">
+                    <li class="paginate_button page-item next" id="dataTable_previous"><a href="?pag=1"
+                                                                                          aria-controls="dataTable"
+                                                                                          tabindex="0"
+                                                                                          class="page-link">Previous</a>
+                    </li>
+                    {% for i in sum_page %}
+                    <li class="paginate_button page-item "><a href="?pag={{i}}" aria-controls="dataTable" tabindex="0"
+                                                              class="page-link">{{i}}</a></li>
+                    {% endfor %}
+                    <li class="paginate_button page-item next" id="dataTable_next"><a href="?pag={{sum_page}}"
+                                                                                      aria-controls="dataTable"
+                                                                                      tabindex="0"
+                                                                                      class="page-link">Next</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+<script>
+  $('.btn-danger').click(function(){
+      swal({
+      title: "确认是否删除?",
+      text: "删除后数据无法恢复！",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+  })
+  .then((willDelete) => {
+      if (willDelete) {
+          $.ajax({
+            url: $(this).attr('url'),
+            type: 'get',
+            success: (data) => {
+              if (data.status===200){
+                $(this).parent().parent().remove()
+                swal("删除成功！", {
+                  icon: "success",
+                });
+              }
+              else{
+                swal("无法删除！",{
+                  icon:"error"
+                });
+              }
+            }
+          })
+      }
+      else {
+        swal("你的数据安全了!");
+      }
+  });
+  })
+
+
+
+
+
+
+
+</script>
+{% endblock %}

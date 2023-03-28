@@ -1,0 +1,71 @@
+{% extends 'blank.html' %}
+{% block script %}
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+{% endblock %}
+{% block data %}
+<div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>基金ID</th>
+                                            <th>持仓</th>
+                                            <th>持仓人</th>
+                                            <th>操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tfoot>
+                                    {% for i in inf_data %}
+                                        <tr id="{{ forloop.counter }}">
+                                            <td>{{ i.id }}</td>
+                                            <td>{{ i.fund_id }}</td>
+                                            <td>{{ i.hold }}</td>
+                                            <td>{{ i.ch_name }}</td>
+                                            <td><a url="{% url 'updata' 'fund_inf' i.id %}" uid="{{ forloop.counter }}" class="btn btn-primary btn-icon-split"><span class="text">更改</span></a></td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tfoot>
+                                    </tbody>
+                                </table>
+                            </div>
+</div>
+<script>
+$('.btn-icon-split').click(function(){
+swal({
+  text: '修改数据后的数值',
+  content: "input",
+  button: {
+    text: "Search!",
+    closeModal: false,
+  },
+})
+.then(new_hold => {
+  if (!new_hold) throw null;
+  return new_hold;
+})
+.then(updata => {
+        var id = $(this).attr('uid');
+        if (updata) {
+              $.ajax({
+                url: $(this).attr('url'),
+                type: 'get',
+                data:{
+                    updata:updata,
+                },
+                success: (data) => {
+                  if (data.status===200){
+                     $("tr:eq("+id+") td:eq(2)").html(updata);
+                  }
+                }
+              })
+        return updata;
+        }
+})
+.then((value) => {
+  swal(`确定修改值: ${value}`);
+});
+})
+</script>
+{% endblock %}

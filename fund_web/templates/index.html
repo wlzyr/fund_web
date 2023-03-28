@@ -1,0 +1,333 @@
+{% extends 'blank.html' %}
+{% block script %}
+<script src="/static/js/echarts.js"></script>
+{% endblock %}
+{% block data %}
+<!-- Begin Page Content -->
+<div class="container-fluid">
+
+                <!-- Page Heading -->
+                <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                    <h1 class="h3 mb-0 text-gray-800">基金概括</h1>
+                    <a class="btn btn-primary" href="{% url 'config' %}">更改</a>
+                </div>
+
+                <!-- Content Row -->
+                <div class="row">
+
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                            倍率
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ m }}</div>
+<!--                                        <input class="h5 mb-0 font-weight-bold text-gray-800" type="text">-->
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                            预定金额
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">¥{{ money }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Earnings (Monthly) Card Example -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">时间
+                                        </div>
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col-auto">
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ date }}
+                                                </div>
+                                            </div>
+                                            <div class="col">
+                                                <div class="progress progress-sm mr-2">
+                                                    <div aria-valuemax="100" aria-valuemin="0"
+                                                         aria-valuenow="50" class="progress-bar bg-info"
+                                                         role="progressbar"
+                                                         style="width: 50%"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pending Requests Card Example -->
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                            实际金额
+                                        </div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">¥{{ now_money }}</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Row -->
+
+                <div class="row">
+
+                        <div class="col-xl-8 col-lg-7">
+                            <div class="card shadow mb-4">
+                                <!-- Card Header - Dropdown -->
+                                <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                    <h6 class="m-0 font-weight-bold text-primary">7天业绩走势</h6>
+                                </div>
+                                <!-- Card Body -->
+                                <div class="card-body">
+                                    <div class="card-body" id="line" style="width:98%;height:320px;">
+<!--                                        width:1036px;height:320px-->
+                                        <script type="text/javascript">
+                                            var chartDom = document.getElementById('line');
+                                            var myChart = echarts.init(chartDom);
+                                            var option;
+                                            option = {
+                                              title: {
+                                                text: ''
+                                              },
+                                              tooltip: {
+                                                trigger: 'axis'
+                                              },
+                                              legend: {
+                                                    data: [
+                                                    {% for i in hold_name %}
+                                                        '{{ i }}',
+                                                    {% endfor %}
+                                                    ]
+                                              },
+                                              grid: {
+                                                left: '3%',
+                                                right: '4%',
+                                                bottom: '3%',
+                                                containLabel: true
+                                              },
+                                              toolbox: {
+                                                feature: {
+                                                  saveAsImage: {}
+                                                }
+                                              },
+                                              xAxis: {
+                                                type: 'category',
+                                                boundaryGap: false,
+                                                data: ['{{ date7.0 }}', '{{ date7.1 }}', '{{ date7.2 }}', '{{ date7.3 }}', '{{ date7.4 }}', '{{ date7.5 }}', '{{ date7.6 }}']
+                                              },
+                                              yAxis: {
+                                                type: 'value'
+                                              },
+                                              series: [
+                                                {
+                                                  name: '{{ hold_name.0 }}',
+                                                  type: 'line',
+                                                  stack: 'Total',
+                                                  data: [
+                                                  {% for i0 in value004746 %}
+                                                  {{ i0 }},
+                                                  {% endfor %}
+                                                  ]
+                                                },
+                                                {
+                                                  name: '{{ hold_name.1 }}',
+                                                  type: 'line',
+                                                  stack: 'Total',
+                                                  data: [
+                                                  {% for i1 in value013291 %}
+                                                  {{ i1 }},
+                                                  {% endfor %}
+                                                  ]
+                                                },
+                                                {
+                                                  name: '{{ hold_name.2 }}',
+                                                  type: 'line',
+                                                  stack: 'Total',
+                                                  data: [
+                                                  {% for i2 in value008888 %}
+                                                  {{ i2 }},
+                                                  {% endfor %}
+                                                  ]
+                                                },
+                                                {
+                                                  name: '{{ hold_name.3 }}',
+                                                  type: 'line',
+                                                  stack: 'Total',
+                                                  data: [
+                                                  {% for i3 in value013048 %}
+                                                  {{ i3 }},
+                                                  {% endfor %}
+                                                  ]
+                                                }
+                                              ]
+                                            };
+                                            option && myChart.setOption(option);
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    <!-- Pie Chart -->
+                    <div class="col-xl-4 col-lg-5">
+                        <div class="card shadow mb-4">
+                            <!-- Card Header - Dropdown -->
+                            <div
+                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">持仓比例</h6>
+                            </div>
+                            <!-- Card Body -->
+                            <div class="card-body" id="pie" style="width:98%;height:360px;">
+                                <script type="text/javascript">
+                                    var myChart = echarts.init(document.getElementById('pie'));
+                                      var option = option = {
+                                                              tooltip: {
+                                                                trigger: 'item'
+                                                              },
+                                                              legend: {
+                                                                top: '5%',
+                                                                left: 'center'
+                                                              },
+                                                              series: [
+                                                                {
+                                                                  name: 'Access From',
+                                                                  type: 'pie',
+                                                                  radius: ['50%', '65%'],
+                                                                  avoidLabelOverlap: false,
+                                                                  itemStyle: {
+                                                                    borderRadius: 10,
+                                                                    borderColor: '#fff',
+                                                                    borderWidth: 2,
+                                                                  },
+                                                                  label: {
+                                                                    show: false,
+                                                                    position: 'center'
+                                                                  },
+                                                                  emphasis: {
+                                                                    label: {
+                                                                      show: true,
+                                                                      fontSize: '20',
+                                                                      fontWeight: 'bold'
+                                                                    }
+                                                                  },
+                                                                  labelLine: {
+                                                                    show: false
+                                                                  },
+                                                                  data: [
+                                                                    { value: {{ hold_num.0 }}, name: '{{ hold_name.0 }}' },
+                                                                    { value: {{ hold_num.1 }}, name: '{{ hold_name.1 }}' },
+                                                                    { value: {{ hold_num.2 }}, name: '{{ hold_name.2 }}' },
+                                                                    { value: {{ hold_num.3 }}, name: '{{ hold_name.3 }}' }
+                                                                  ]
+                                                                }
+                                                              ]
+                                                            };
+                                    myChart.setOption(option);
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Content Row -->
+                <div class="row">
+
+                    <!-- Content Column -->
+                    <div class="col-lg-6 mb-4">
+
+                        <!-- Project Card Example -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">基金涨幅</h6>
+                            </div>
+                            <div class="row">
+                                {% for id,fund_floating in fund_floatings.items %}
+                            <div class="col-lg-6 mb-4">
+                                <div class="{{ fund_floating.style }}">
+                                    <div class="card-body">
+                                        {{ fund_floating.name }}
+                                        <div class="text-white-50 small">{{ fund_floating.growth }}%</div>
+                                    </div>
+                                </div>
+                            </div>
+                                {% endfor %}
+                        </div>
+                        </div>
+                        </div>
+
+                    <div class="col-lg-6 mb-4">
+
+                        <!-- Illustrations -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">最新消息</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="text-center">
+<!--                                    <img alt="..." class="img-fluid px-3 px-sm-4 mt-3 mb-4"-->
+<!--                                         src="/static/img/undraw_posting_photo.svg" style="width: 25rem;">-->
+                                </div>
+                                <p style="line-height: 180%">{{ textvalue }}</p>
+                                <a href="https://caifuhao.eastmoney.com/cfh/125612" rel="nofollow" target="_blank">往期文章</a>
+                            </div>
+                        </div>
+
+                        <!-- Approach -->
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Development Approach</h6>
+                            </div>
+                            <div class="card-body">
+                                <p>SB Admin 2 makes extensive use of Bootstrap 4 utility classes in order to reduce
+                                    CSS bloat and poor page performance. Custom CSS classes are used to create
+                                    custom components and custom utility classes.</p>
+                                <p class="mb-0">Before working with this theme, you should become familiar with the
+                                    Bootstrap framework, especially the utility classes.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+<!-- /.container-fluid -->
+{% endblock %}

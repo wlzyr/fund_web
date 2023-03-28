@@ -1,0 +1,40 @@
+CREATE TABLE IF NOT EXISTS `fund_inf`(
+`id` INT UNSIGNED AUTO_INCREMENT,
+`fund_id` VARCHAR(32) NOT NULL,
+ `hold` FLOAT NOT NULL,
+`ch_name` VARCHAR(32) NOT NULL,
+ PRIMARY KEY ( id)
+)ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `week_journal`(
+`id` INT UNSIGNED AUTO_INCREMENT,
+`fund_id` VARCHAR(32) NOT NULL,
+`cr_change` FLOAT NOT NULL,
+`cr_date` DATETIME NULL,
+`ch_name` VARCHAR(32) NULL,
+PRIMARY KEY ( id)
+)ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `sum_journal`(
+`id` INT UNSIGNED AUTO_INCREMENT,
+`fund_id` VARCHAR(32) NOT NULL,
+`cr_change` FLOAT NOT NULL,
+`cr_date` DATETIME NULL,
+`ch_name` VARCHAR(32) NULL,
+PRIMARY KEY ( id)
+)ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `week_Increase`(
+`id` INT UNSIGNED AUTO_INCREMENT,
+`fund_id` VARCHAR(32) NOT NULL,
+ `Increase` FLOAT NOT NULL,
+`ch_name` VARCHAR(32) NOT NULL,
+ PRIMARY KEY ( id)
+)ENGINE=InnoDB; 
+
+create table config_table(id int auto_increment primary key,config json);
+create table 7day_004746(id int auto_increment primary key,date VARCHAR(32),value FLOAT);
+create table 7day_013291(id int auto_increment primary key,date VARCHAR(32),value FLOAT);
+create table 7day_008888(id int auto_increment primary key,date VARCHAR(32),value FLOAT);
+create table 7day_013048(id int auto_increment primary key,date VARCHAR(32),value FLOAT);
+create table login(id int auto_increment primary key,user VARCHAR(32),password VARCHAR(64));
