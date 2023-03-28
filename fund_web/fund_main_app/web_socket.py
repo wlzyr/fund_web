@@ -6,7 +6,7 @@ import pickle
 def main(data):
     pubkey, privkey = rsa.newkeys(512)
     pubkey_by = pickle.dumps(pubkey)
-    ip = "101.35.131.99" #101.35.131.99  127.0.0.1
+    ip = "127.0.0.1"
     port = 4499
     ss = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     ss.connect((ip,port))
