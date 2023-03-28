@@ -312,7 +312,7 @@ class Paginator(object):
 class sum_data(View, fund_db):
     def _select_data(self, pag=0):
         db, cursor = self.db()
-        sql = "select * from sum_journal ORDER BY id DESC LIMIT 57"
+        sql = "select * from sum_journal ORDER BY id DESC LIMIT 100"
         cursor.execute(sql)
         sum_journal = cursor.fetchall()
         for i in sum_journal:
