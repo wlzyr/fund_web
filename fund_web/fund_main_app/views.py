@@ -368,9 +368,12 @@ class fund_inf(View, fund_db):
 
 class updata(View, fund_db):
     def get(self, request, updata_obj, pk):
+        value = "hold"
+        if updata_obj != "fund_inf":
+            value = "cr_change"
         db, cursor = self.db()
         updata = request.GET.get("updata")
-        sql = "update {} set hold={} where id={}".format(updata_obj, updata, pk)
+        sql = "update {} set {}={} where id={}".format(updata_obj,value,updata, pk)
         cursor.execute(sql)
         db.commit()
         db.close()
