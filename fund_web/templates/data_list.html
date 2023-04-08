@@ -27,7 +27,8 @@
                 <td>{{i.ch_name}}</td>
                 <td><a url="{% url 'delete' table_name  i.id %}" class="btn btn-danger btn-icon-split"><span
                         class="text">删除</span></a>
-                    <a url="{% url 'updata' 'sum_journal' i.id %}" uid="{{ forloop.counter }}" class="btn btn-primary btn-icon-split"><span class="text">更改</span></a>
+                    <a url="{% url 'updata' 'sum_journal' i.id %}" uid="{{ forloop.counter }}"
+                       class="btn btn-primary btn-icon-split"><span class="text">更改</span></a>
                 </td>
             </tr>
             {% endfor %}
@@ -66,75 +67,73 @@
     {% endif %}
 </div>
 <script>
-  $('.btn-danger').click(function(){
-      swal({
-      title: "确认是否删除?",
-      text: "删除后数据无法恢复！",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-  })
-  .then((willDelete) => {
-      if (willDelete) {
-          $.ajax({
-            url: $(this).attr('url'),
-            type: 'get',
-            success: (data) => {
-              if (data.status===200){
-                $(this).parent().parent().remove()
-                swal("删除成功！", {
-                  icon: "success",
-                });
-              }
-              else{
-                swal("无法删除！",{
-                  icon:"error"
-                });
-              }
-            }
-          })
-      }
-      else {
-        swal("你的数据安全了!");
-      }
-  });
-  })
+    $('.btn-danger').click(function () {
+        swal({
+            title: "确认是否删除?",
+            text: "删除后数据无法恢复！",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        url: $(this).attr('url'),
+                        type: 'get',
+                        success: (data) => {
+                            if (data.status === 200) {
+                                $(this).parent().parent().remove()
+                                swal("删除成功！", {
+                                    icon: "success",
+                                });
+                            } else {
+                                swal("无法删除！", {
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    })
+                } else {
+                    swal("你的数据安全了!");
+                }
+            });
+    })
 </script>
 <script>
-$('.btn-icon-split').click(function(){
-swal({
-  text: '修改数据后的数值',
-  content: "input",
-  button: {
-    text: "Search!",
-    closeModal: false,
-  },
-})
-.then(new_hold => {
-  if (!new_hold) throw null;
-  return new_hold;
-})
-.then(updata => {
-        var id = $(this).attr('uid');
-        if (updata) {
-              $.ajax({
-                url: $(this).attr('url'),
-                type: 'get',
-                data:{
-                    updata:updata,
-                },
-                success: (data) => {
-                  if (data.status===200){
-                     $("tr:eq("+id+") td:eq(2)").html(updata);
-                  }
+    $('.btn-icon-split').click(function () {
+        swal({
+            text: '修改数据后的数值',
+            content: "input",
+            button: {
+                text: "Search!",
+                closeModal: false,
+            },
+        })
+            .then(new_hold => {
+                if (!new_hold) throw null;
+                return new_hold;
+            })
+            .then(updata => {
+                var id = $(this).attr('uid');
+                if (updata) {
+                    $.ajax({
+                        url: $(this).attr('url'),
+                        type: 'get',
+                        data: {
+                            updata: updata,
+                        },
+                        success: (data) => {
+                            if (data.status === 200) {
+                                $("tr:eq(" + id + ") td:eq(2)").html(updata);
+                            }
+                        }
+                    })
+                    return updata;
                 }
-              })
-        return updata;
-        }
-})
-.then((value) => {
-  swal(`确定修改值: ${value}`);
-});
-})
+            })
+            .then((value) => {
+                swal(`确定修改值: ${value}`);
+            });
+    })
 </script>
 {% endblock %}

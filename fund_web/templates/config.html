@@ -1,44 +1,64 @@
 {% extends 'blank.html' %}
 {% block data %}
-	<link rel="stylesheet" media="screen" href="/static/css/styles.css" >
-    <style>
-    .contact_form{padding-top:40px;}
-	.title {background-color:rgba(0,0,0,0.56); text-align:center; width:100%; position:fixed; top:0; left:0; padding:5px 0;}
-.title a {color:#FFF; text-decoration:none; font-size:16px; font-weight:bolder; line-height:24px;}
-    </style>
+<link rel="stylesheet" media="screen" href="/static/css/styles.css">
+<style>
+    .contact_form {
+        padding-top: 40px;
+    }
+
+    .title {
+        background-color: rgba(0, 0, 0, 0.56);
+        text-align: center;
+        width: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        padding: 5px 0;
+    }
+
+    .title a {
+        color: #FFF;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bolder;
+        line-height: 24px;
+    }
+</style>
 <div align="center">
-<table border="1" width="47%" height="250" style="border-width: 0px">
-	<!-- MSTableType="layout" -->
-	<tr>
-		<td style="border-style: none; border-width: medium">　<form class="contact_form" action="#" method="post" name="contact_form">
-            {% csrf_token %}
-    <ul>
-        <li>
-             <h2>配置信息</h2>
-             <span class="required_notification">* 表示必填项</span>
-        </li>
-        <li>
-            <label for="name">倍率:</label>
-            <input type="text" name="m" value="{{ m }}" required />
-        </li>
-        <li>
-            <label for="email">预定金额:</label>
-            <input type="text" name="money" value="{{ money }}" required />
-        </li>
-        <li>
-            <label for="website">时间:</label>
-            <input type="text" name="date" value="{{ date }}" required/>
-        </li>
-        <li>
-            <label for="message">实际金额:</label>
-            <input type="text" name="now_money" value="{{ now_money }}" readonly="readonly"/>
-        </li>
-        <li>
-        	<button class="btn btn-primary" type="submit">提交</button>
-        </li>
-    </ul>
-</form></td>
-	</tr>
-</table>
+    <table border="1" width="47%" height="250" style="border-width: 0px">
+        <!-- MSTableType="layout" -->
+        <tr>
+            <td style="border-style: none; border-width: medium">　
+                <form class="contact_form" action="#" method="post" name="contact_form">
+                    {% csrf_token %}
+                    <ul>
+                        <li>
+                            <h2>配置信息</h2>
+                            <span class="required_notification">* 表示必填项</span>
+                        </li>
+                        <li>
+                            <label for="name">倍率:</label>
+                            <input type="text" name="m" value="{{ m }}" required/>
+                        </li>
+                        <li>
+                            <label for="email">预定金额:</label>
+                            <input type="text" name="money" value="{{ money }}" required/>
+                        </li>
+                        <li>
+                            <label for="website">时间:</label>
+                            <input type="text" name="date" value="{{ date }}" required/>
+                        </li>
+                        <li>
+                            <label for="message">实际金额:</label>
+                            <input type="text" name="now_money" value="{{ now_money }}" readonly="readonly"/>
+                        </li>
+                        <li>
+                            <button class="btn btn-primary" type="submit">提交</button>
+                        </li>
+                    </ul>
+                </form>
+            </td>
+        </tr>
+    </table>
 </div>
 {% endblock %}

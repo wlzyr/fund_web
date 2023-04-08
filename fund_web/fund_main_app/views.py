@@ -15,7 +15,7 @@ from chinese_calendar import is_workday
 import datetime
 from bs4 import BeautifulSoup
 
-from fund_web.settings import DB_PASSWORD,DB_IPADDRESS
+from fund_web.settings import DB_PASSWORD, DB_IPADDRESS
 
 
 # Create your views here.
@@ -373,7 +373,7 @@ class updata(View, fund_db):
             value = "cr_change"
         db, cursor = self.db()
         updata = request.GET.get("updata")
-        sql = "update {} set {}={} where id={}".format(updata_obj,value,updata, pk)
+        sql = "update {} set {}={} where id={}".format(updata_obj, value, updata, pk)
         cursor.execute(sql)
         db.commit()
         db.close()
