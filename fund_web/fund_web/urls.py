@@ -28,4 +28,5 @@ urlpatterns = [
     re_path(r'del_(\w+_\w+)/(\d+)/', views.delete.as_view(), name="delete"),
     re_path(r'updata_(\w+_\w+)/(\d+)/', views.updata.as_view(), name="updata"),
     path('error/', views.error.as_view(), name="error"),
+    path('fund/float/set/', views.FundFloatSet.as_view(), name="fund_float_set"),
 ]

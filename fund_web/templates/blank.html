@@ -45,7 +45,7 @@
         <li class="nav-item active">
             <a class="nav-link" href="{% url 'index' %}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
-                <span>Dashboard</span></a>
+                <span>数据大屏</span></a>
         </li>
 
         <!-- Divider -->
@@ -78,16 +78,13 @@
                data-target="#collapseUtilities"
                data-toggle="collapse" href="#">
                 <i class="fas fa-fw fa-wrench"></i>
-                <span>Utilities</span>
+                <span>设置</span>
             </a>
             <div aria-labelledby="headingUtilities" class="collapse" data-parent="#accordionSidebar"
                  id="collapseUtilities">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Custom Utilities:</h6>
-                    <a class="collapse-item" href="utilities-color.html">Colors</a>
-                    <a class="collapse-item" href="utilities-border.html">Borders</a>
-                    <a class="collapse-item" href="utilities-animation.html">Animations</a>
-                    <a class="collapse-item" href="utilities-other.html">Other</a>
+                    <a class="collapse-item" href="{% url 'config' %}">基金概括设置</a>
+                    <a class="collapse-item" href="{% url 'fund_float_set' %}">基金涨幅设置</a>
                 </div>
             </div>
         </li>

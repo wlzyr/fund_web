@@ -407,6 +407,11 @@ class login(View, fund_db):
             return render(request, "login.html", {"color": "form-control-red", "err": "账号密码错误"})
 
 
+class FundFloatSet(View, fund_db):
+    def get(self, request):
+        return render(request, "fund_float_set.html")
+
+
 class error(View):
     def get(self, request):
         return render(request, "error.html")
