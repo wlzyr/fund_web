@@ -67,40 +67,7 @@
     {% endif %}
 </div>
 <script>
-    $('.btn-danger').click(function () {
-        swal({
-            title: "确认是否删除?",
-            text: "删除后数据无法恢复！",
-            icon: "warning",
-            buttons: true,
-            dangerMode: true,
-        })
-            .then((willDelete) => {
-                if (willDelete) {
-                    $.ajax({
-                        url: $(this).attr('url'),
-                        type: 'get',
-                        success: (data) => {
-                            if (data.status === 200) {
-                                $(this).parent().parent().remove()
-                                swal("删除成功！", {
-                                    icon: "success",
-                                });
-                            } else {
-                                swal("无法删除！", {
-                                    icon: "error"
-                                });
-                            }
-                        }
-                    })
-                } else {
-                    swal("你的数据安全了!");
-                }
-            });
-    })
-</script>
-<script>
-    $('.btn-icon-split').click(function () {
+    $('.btn-primary').click(function () {
         swal({
             text: '修改数据后的数值',
             content: "input",
@@ -136,4 +103,39 @@
             });
     })
 </script>
+<script>
+    $('.btn-danger').click(function () {
+        swal({
+            title: "确认是否删除?",
+            text: "删除后数据无法恢复！",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        url: $(this).attr('url'),
+                        type: 'get',
+                        success: (data) => {
+                            if (data.status === 200) {
+                                $(this).parent().parent().remove()
+                                swal("删除成功！", {
+                                    icon: "success",
+                                });
+                            } else {
+                                swal("无法删除！", {
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    })
+                } else {
+                    swal("你的数据安全了!");
+                }
+            });
+    })
+</script>
+
+
 {% endblock %}
