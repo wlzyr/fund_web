@@ -85,7 +85,7 @@ def _get_textvalue():
         html = requests.get(url=r'https://caifuhao.eastmoney.com/news/{}'.format(str(id)), headers=tt_he)
         temp = BeautifulSoup(html.text, "lxml")
         if temp.find_all('p')[:-3]:
-            if temp.find_all('p')[:-3][0].string != " ":
+            if temp.find_all('p')[:-3][0].string != " " and temp.find_all('p')[:-3][0].string != None:
                 break
     value = ""
     for i in temp.find_all('p')[:-3]:
