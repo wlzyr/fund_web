@@ -1,1 +1,41 @@
 {% extends 'blank.html' %}
+{% block data %}
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10%;
+    }
+
+    .input-box {
+        width: 350px;
+        height: 40px;
+        border: 2px solid #4e73df;
+        border-radius: 20px;
+        padding: 10px;
+        font-size: 18px;
+        color: #000000;
+    }
+
+</style>
+
+<div class="container">
+    <input type="text" class="input-box" placeholder="输入基金ID...">
+    <button class="btn btn-primary" style="margin-left: 10px">添加</button>
+</div>
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>基金ID</th>
+                <th>加仓</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+{% endblock %}
