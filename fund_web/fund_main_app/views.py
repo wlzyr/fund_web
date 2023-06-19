@@ -19,29 +19,7 @@ from fund_web.settings import DB_PASSWORD, DB_IPADDRESS
 
 
 # Create your views here.
-def _fund_floating():
-    fund_list = ["004746", "013291", "008888", "013048", "002351"]
-    ret = {}
-    for fund in fund_list:
-        tt_cookie = "qgqp_b_id=7110e64f9def8a6d6521b2453aff65fa; em_hq_fls=js; HAList=a-sh-600760-%u4E2D%u822A%u6C88%u98DE%2Ca-sz-002024-%u82CF%u5B81%u6613%u8D2D%2Ca-sz-000998-%u9686%u5E73%u9AD8%u79D1; intellpositionL=1472.8px; intellpositionT=2214px; AUTH_FUND.EASTMONEY.COM_GSJZ=AUTH*TTJJ*TOKEN; st_si=44692806308497; st_asi=delete; ASP.NET_SessionId=vqwpjm0zjmhdms1khwsx2sey; _qddaz=QD.x7conp.ccc1ye.kr50mpfc; EMFUND0=null; EMFUND1=07-08%2023%3A48%3A06@%23%24%u534E%u590F%u4EA7%u4E1A%u5347%u7EA7%u6DF7%u5408@%23%24005774; EMFUND2=07-08%2023%3A50%3A42@%23%24%u534E%u590F%u56FD%u4F01%u6539%u9769%u6DF7%u5408@%23%24001924; EMFUND3=07-12%2016%3A07%3A31@%23%24%u4FE1%u8FBE%u6FB3%u94F6%u65B0%u80FD%u6E90%u7CBE%u9009%u6DF7%u5408@%23%24012079; EMFUND4=07-14%2021%3A04%3A26@%23%24%u5E7F%u53D1%u4EF7%u503C%u4F18%u9009%u6DF7%u5408C@%23%24011135; EMFUND5=07-14%2015%3A28%3A21@%23%24%u8D22%u901A%u667A%u6167%u6210%u957F%u6DF7%u5408C@%23%24009063; EMFUND6=07-14%2021%3A03%3A52@%23%24%u534E%u590F%u5927%u76D8%u7CBE%u9009%u6DF7%u5408A@%23%24000011; EMFUND7=07-14%2021%3A13%3A00@%23%24%u5DE5%u94F6%u517B%u80012050%u6DF7%u5408%28FOF%29@%23%24006886; EMFUND8=07-15%2022%3A57%3A42@%23%24%u91D1%u9E70%u5185%u9700%u6210%u957F%u6DF7%u5408C@%23%24009969; EMFUND9=07-15 23:01:43@#$%u524D%u6D77%u5F00%u6E90%u6CAA%u6E2F%u6DF1%u6838%u5FC3%u8D44%u6E90%u6DF7%u5408A@%23%24003304; st_pvi=98760667666399; st_sp=2021-02-19%2012%3A00%3A58; st_inirUrl=http%3A%2F%2Fwww.zodiacn.ltd%2F; st_sn=6; st_psi=20210715230142577-112200305282-9987805961"
-        tt_he = {
-            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67",
-            "Cookie": tt_cookie,
-            "Referer": "http: // fundf10.eastmoney.com /",
-        }
-        growth_rate = requests.get(url=r'http://fundgz.1234567.com.cn/js/' + fund + '.js', headers=tt_he)
-        growth_rate = json.loads(growth_rate.text[8:-2])
-        if growth_rate["gszzl"][0] == '-':
-            fund_data = {"growth": growth_rate["gszzl"], "style": "card bg-success text-white shadow",
-                         "name": growth_rate["name"]}
-        else:
-            fund_data = {"growth": growth_rate["gszzl"], "style": "card bg-danger text-white shadow",
-                         "name": growth_rate["name"]}
-        ret[fund] = fund_data
-    return ret
-
-
-def _linedata(fund_id):
+def _linedata(fund_id):  # 7天业绩走势
     fund_dict = {}
     for id in range(0, 1):
         url = "http://api.fund.eastmoney.com/f10/lsjz?callback=jQuery183042533241398945254_1631367478759&fundCode=" + str(
@@ -67,7 +45,7 @@ def _linedata(fund_id):
     return fund_dict  # {时间:[净值,涨幅]}
 
 
-def _get_textvalue():
+def _get_textvalue():  # 最新消息
     tt_cookie = "qgqp_b_id=7110e64f9def8a6d6521b2453aff65fa; em_hq_fls=js; intellpositionL=1472.8px; intellpositionT=2214px; AUTH_FUND.EASTMONEY.COM_GSJZ=AUTH*TTJJ*TOKEN; em-quote-version=topspeed; HAList=a-sh-601728-N%u7535%u4FE1%2Ca-sz-300782-%u5353%u80DC%u5FAE%2Ca-sh-603501-%u97E6%u5C14%u80A1%u4EFD%2Ca-sh-603986-%u5146%u6613%u521B%u65B0%2Ca-sz-300661-%u5723%u90A6%u80A1%u4EFD%2Cd-hk-01211%2Ca-sz-300014-%u4EBF%u7EAC%u9502%u80FD%2Ca-sh-603659-%u749E%u6CF0%u6765%2Ca-sz-300750-%u5B81%u5FB7%u65F6%u4EE3%2Ca-sh-603811-%u8BDA%u610F%u836F%u4E1A%2Ca-sz-300408-%u4E09%u73AF%u96C6%u56E2%2Cd-hk-00700; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND7=null; st_si=95391201505798; st_asi=delete; EMFUND0=null; EMFUND8=01-31%2010%3A55%3A40@%23%24%u56FD%u6CF0800%u6C7D%u8F66%u4E0E%u96F6%u90E8%u4EF6ETF%u8054%u63A5A@%23%24012973; EMFUND9=01-31 10:56:00@#$%u82F1%u5927%u56FD%u4F01%u6539%u9769%u4E3B%u9898%u80A1%u7968@%23%24001678; st_pvi=98760667666399; st_sp=2021-02-19%2012%3A00%3A58; st_inirUrl=http%3A%2F%2Fwww.zodiacn.ltd%2F; st_sn=16; st_psi=20230131111551181-119101302131-0498410301"
     tt_he = {
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.70",
@@ -105,7 +83,7 @@ def _get_textvalue():
     return value
 
 
-class fund_db(object):
+class FundDb(object):  # 数据object
     @staticmethod
     def db():
         db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
@@ -114,7 +92,7 @@ class fund_db(object):
         return db, cursor
 
 
-class main(View, fund_db):
+class Bi(View, FundDb):  # 数据大屏
     def _config(self):
         db, cursor = self.db()
         sql = "select config  from config_table"
@@ -206,6 +184,33 @@ class main(View, fund_db):
                                                                                                                   ::-1]
         return date7, value008888, value004746, value013291, value013048
 
+    def _fund_floating(self):  # 基金涨幅
+        fund_list = []
+        db, cursor = self.db()
+        sql = """select fund_id from new_fund_Increase;"""
+        cursor.execute(sql)
+        for fund_obj in cursor.fetchall():
+            for fund_id in fund_obj.values():
+                fund_list.append(fund_id)
+        ret = {}
+        for fund in fund_list:
+            tt_cookie = "qgqp_b_id=7110e64f9def8a6d6521b2453aff65fa; em_hq_fls=js; HAList=a-sh-600760-%u4E2D%u822A%u6C88%u98DE%2Ca-sz-002024-%u82CF%u5B81%u6613%u8D2D%2Ca-sz-000998-%u9686%u5E73%u9AD8%u79D1; intellpositionL=1472.8px; intellpositionT=2214px; AUTH_FUND.EASTMONEY.COM_GSJZ=AUTH*TTJJ*TOKEN; st_si=44692806308497; st_asi=delete; ASP.NET_SessionId=vqwpjm0zjmhdms1khwsx2sey; _qddaz=QD.x7conp.ccc1ye.kr50mpfc; EMFUND0=null; EMFUND1=07-08%2023%3A48%3A06@%23%24%u534E%u590F%u4EA7%u4E1A%u5347%u7EA7%u6DF7%u5408@%23%24005774; EMFUND2=07-08%2023%3A50%3A42@%23%24%u534E%u590F%u56FD%u4F01%u6539%u9769%u6DF7%u5408@%23%24001924; EMFUND3=07-12%2016%3A07%3A31@%23%24%u4FE1%u8FBE%u6FB3%u94F6%u65B0%u80FD%u6E90%u7CBE%u9009%u6DF7%u5408@%23%24012079; EMFUND4=07-14%2021%3A04%3A26@%23%24%u5E7F%u53D1%u4EF7%u503C%u4F18%u9009%u6DF7%u5408C@%23%24011135; EMFUND5=07-14%2015%3A28%3A21@%23%24%u8D22%u901A%u667A%u6167%u6210%u957F%u6DF7%u5408C@%23%24009063; EMFUND6=07-14%2021%3A03%3A52@%23%24%u534E%u590F%u5927%u76D8%u7CBE%u9009%u6DF7%u5408A@%23%24000011; EMFUND7=07-14%2021%3A13%3A00@%23%24%u5DE5%u94F6%u517B%u80012050%u6DF7%u5408%28FOF%29@%23%24006886; EMFUND8=07-15%2022%3A57%3A42@%23%24%u91D1%u9E70%u5185%u9700%u6210%u957F%u6DF7%u5408C@%23%24009969; EMFUND9=07-15 23:01:43@#$%u524D%u6D77%u5F00%u6E90%u6CAA%u6E2F%u6DF1%u6838%u5FC3%u8D44%u6E90%u6DF7%u5408A@%23%24003304; st_pvi=98760667666399; st_sp=2021-02-19%2012%3A00%3A58; st_inirUrl=http%3A%2F%2Fwww.zodiacn.ltd%2F; st_sn=6; st_psi=20210715230142577-112200305282-9987805961"
+            tt_he = {
+                "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67",
+                "Cookie": tt_cookie,
+                "Referer": "http: // fundf10.eastmoney.com /",
+            }
+            growth_rate = requests.get(url=r'http://fundgz.1234567.com.cn/js/' + fund + '.js', headers=tt_he)
+            growth_rate = json.loads(growth_rate.text[8:-2])
+            if growth_rate["gszzl"][0] == '-':
+                fund_data = {"growth": growth_rate["gszzl"], "style": "card bg-success text-white shadow",
+                             "name": growth_rate["name"]}
+            else:
+                fund_data = {"growth": growth_rate["gszzl"], "style": "card bg-danger text-white shadow",
+                             "name": growth_rate["name"]}
+            ret[fund] = fund_data
+        return ret
+
     def get(self, request):
         user = request.COOKIES.get("user")
         cookie_date = request.COOKIES.get("new_date")
@@ -213,7 +218,7 @@ class main(View, fund_db):
         hold_name, hold_num = self._pie_chart()
         date7, value008888, value004746, value013291, value013048 = self._line_chart(cookie_date)
         textvalue = _get_textvalue()
-        fund_floatings = _fund_floating()
+        fund_floatings = self._fund_floating()
         ret = render(request, "index.html",
                      {"user": user,
                       'm': m, "date": date, "money": money, "now_money": now_money,
@@ -231,7 +236,7 @@ class main(View, fund_db):
         return ret
 
 
-class config(View, fund_db):
+class Config(View, FundDb):  # 基金概括设置
     def _up_cofig(self, m, date, money):
         db, cursor = self.db()
         sql = "select config from config_table"
@@ -261,16 +266,16 @@ class config(View, fund_db):
                 "user": user,
             })
         else:
-            return redirect("error")
+            return redirect("Error")
 
     def post(self, request):
         m, date, money = request.POST.get("m"), request.POST.get("date"), int(request.POST.get("money")) // 4
         date = date.split(":")
         self._up_cofig(m, date, money)
-        return redirect("index")
+        return redirect("Bi")
 
 
-class week_data(View, fund_db):
+class WeekData(View, FundDb):  # 周数据
     def _select_data(self):
         db, cursor = self.db()
         sql = "select * from week_journal"
@@ -290,7 +295,7 @@ class week_data(View, fund_db):
         })
 
 
-class Paginator(object):
+class Paginator(object):  # 分页
     def __init__(self, data_list, pag):
         self.data_list = []
         self.sumnum = len(data_list)
@@ -309,7 +314,7 @@ class Paginator(object):
         return self.sumnum
 
 
-class sum_data(View, fund_db):
+class SumData(View, FundDb):  # 总数据
     def _select_data(self, pag=0):
         db, cursor = self.db()
         sql = "select * from sum_journal ORDER BY id DESC LIMIT 100"
@@ -325,7 +330,8 @@ class sum_data(View, fund_db):
 
     def get(self, request):
         pag = request.GET.get("pag", 0)
-        if pag != 0: pag = int(pag) - 1
+        pag = int(pag)
+        if pag > 1: pag = pag - 1
         sum_journal, sum_page, sumnum = self._select_data(pag)
         user = request.COOKIES.get("user")
         return render(request, "data_list.html", {
@@ -333,13 +339,15 @@ class sum_data(View, fund_db):
             "user": user,
             "table_name": "sum_journal",
             "sum_page": sum_page,
+            "last_page": pag if pag > 1 else 1,
+            "next_page": pag + 2 if pag + 2 < 10 else 10,
             "sumnum": sumnum,
             "start_page": pag * 10,
             "end_page": len(sum_journal) + pag * 10 - 1,
         })
 
 
-class delete(View, fund_db):
+class Delete(View, FundDb):  # 总/周数据的删除
     def get(self, request, dele_obj, pk):
         db, cursor = self.db()
         sql = "delete from {} where id={}".format(dele_obj, pk)
@@ -349,7 +357,7 @@ class delete(View, fund_db):
         return JsonResponse({"status": 200})
 
 
-class fund_inf(View, fund_db):
+class FundInf(View, FundDb):  # 个基金数据
     def _inf(self):
         db, cursor = self.db()
         sql = "select * from fund_inf"
@@ -366,7 +374,7 @@ class fund_inf(View, fund_db):
         })
 
 
-class updata(View, fund_db):
+class Updata(View, FundDb):  # 总/周数据编辑
     def get(self, request, updata_obj, pk):
         value = "hold"
         if updata_obj != "fund_inf":
@@ -380,7 +388,7 @@ class updata(View, fund_db):
         return JsonResponse({"status": 200})
 
 
-class login(View, fund_db):
+class login(View, FundDb):  # 登录
     def get(self, request):
         return render(request, "login.html", {"color": "form-control"})
 
@@ -395,7 +403,7 @@ class login(View, fund_db):
         cursor.execute(sql)
         password_db = cursor.fetchall()
         if len(password_db) != 0 and (password_sha == password_db[0]["password"]):
-            ret = redirect("index")
+            ret = redirect("Bi")
             user_obj = hashlib.sha256()
             user_obj.update(user.encode("utf-8"))
             login_status = user_obj.hexdigest()
@@ -407,11 +415,11 @@ class login(View, fund_db):
             return render(request, "login.html", {"color": "form-control-red", "err": "账号密码错误"})
 
 
-class FundFloatSet(View, fund_db):
+class FundFloatSet(View, FundDb):  # 基金涨幅设置
     def get(self, request):
         return render(request, "fund_float_set.html")
 
 
-class error(View):
+class Error(View):  # 404
     def get(self, request):
         return render(request, "error.html")

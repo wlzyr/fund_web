@@ -23,7 +23,7 @@
                 <td>{{ i.fund_id }}</td>
                 <td>{{ i.hold }}</td>
                 <td>{{ i.ch_name }}</td>
-                <td><a url="{% url 'updata' 'fund_inf' i.id %}" uid="{{ forloop.counter }}"
+                <td><a url="{% url 'Updata' 'fund_inf' i.id %}" uid="{{ forloop.counter }}"
                        class="btn btn-primary btn-icon-split"><span class="text">更改</span></a></td>
             </tr>
             {% endfor %}

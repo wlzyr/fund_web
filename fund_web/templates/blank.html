@@ -31,7 +31,7 @@
     <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
         <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'index' %}">
+        <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{% url 'Bi' %}">
             <div class="sidebar-brand-icon rotate-n-15">
                 <i class="fas fa-laugh-wink"></i>
             </div>
@@ -43,7 +43,7 @@
 
         <!-- Nav Item - Dashboard -->
         <li class="nav-item active">
-            <a class="nav-link" href="{% url 'index' %}">
+            <a class="nav-link" href="{% url 'Bi' %}">
                 <i class="fas fa-fw fa-tachometer-alt"></i>
                 <span>数据大屏</span></a>
         </li>
@@ -65,9 +65,9 @@
             </a>
             <div aria-labelledby="headingTwo" class="collapse" data-parent="#accordionSidebar" id="collapseTwo">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="{% url 'week_data' %}">周数据</a>
-                    <a class="collapse-item" href="{% url 'sum_data' %}">总数据</a>
-                    <a class="collapse-item" href="{% url 'fund_inf' %}">个基金数据</a>
+                    <a class="collapse-item" href="{% url 'WeekData' %}">周数据</a>
+                    <a class="collapse-item" href="{% url 'SumData' %}">总数据</a>
+                    <a class="collapse-item" href="{% url 'FundInf' %}">个基金数据</a>
                 </div>
             </div>
         </li>
@@ -83,7 +83,7 @@
             <div aria-labelledby="headingUtilities" class="collapse" data-parent="#accordionSidebar"
                  id="collapseUtilities">
                 <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item" href="{% url 'config' %}">基金概括设置</a>
+                    <a class="collapse-item" href="{% url 'Config' %}">基金概括设置</a>
                     <a class="collapse-item" href="{% url 'fund_float_set' %}">基金涨幅设置</a>
                 </div>
             </div>
