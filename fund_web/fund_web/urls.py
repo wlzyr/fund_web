@@ -15,18 +15,24 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from fund_main_app import views
+from views.authentication import Login
+from views.bi import Home, Error
+from views.data import FundInf, Delete, Update, SumData, WeekData
+from views.fund_date_set import FundFloatSet, Config
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path("", views.login.as_view(), name="login"),
-    path('index/', views.Bi.as_view(), name="Bi"),
-    path('config/', views.Config.as_view(), name="Config"),
-    path('week/data/', views.WeekData.as_view(), name="WeekData"),
-    path('sum/data/', views.SumData.as_view(), name="SumData"),
-    path('fund/inf/', views.FundInf.as_view(), name="FundInf"),
-    re_path(r'del_(\w+_\w+)/(\d+)/', views.Delete.as_view(), name="Delete"),
-    re_path(r'updata_(\w+_\w+)/(\d+)/', views.Updata.as_view(), name="Updata"),
-    path('error/', views.Error.as_view(), name="Error"),
-    path('fund/float/set/', views.FundFloatSet.as_view(), name="fund_float_set"),
+    path("", Login.as_view(), name="login"),  # 登录
+
+    path('index/', Home.as_view(), name="Bi"),  # 数据大屏
+
+    path('week/data/', WeekData.as_view(), name="WeekData"),  # 周数据
+    path('sum/data/', SumData.as_view(), name="SumData"),  # 总数据
+    path('fund/inf/', FundInf.as_view(), name="FundInf"),  # 个人基金数据
+    re_path(r'del_(\w+_\w+)/(\d+)/', Delete.as_view(), name="Delete"),  # 总/周数据的删除
+    re_path(r'update_(\w+_\w+)/(\d+)/', Update.as_view(), name="Update"),  # 总/周/个人数据编辑
+
+    path('fund/float/set/', FundFloatSet.as_view(), name="fund_float_set"),  # 基金概括设置
+    path('config/', Config.as_view(), name="Config"),  # 基金涨幅设置
+
+    path('error/', Error.as_view(), name="Error"),  # 错误页面
 ]

@@ -27,7 +27,7 @@
                 <td>{{i.ch_name}}</td>
                 <td><a url="{% url 'Delete' table_name  i.id %}" class="btn btn-danger btn-icon-split"><span
                         class="text">删除</span></a>
-                    <a url="{% url 'Updata' 'sum_journal' i.id %}" uid="{{ forloop.counter }}"
+                    <a url="{% url 'Update' 'sum_journal' i.id %}" uid="{{ forloop.counter }}"
                        class="btn btn-primary btn-icon-split"><span class="text">更改</span></a>
                 </td>
             </tr>
@@ -80,22 +80,22 @@
                 if (!new_hold) throw null;
                 return new_hold;
             })
-            .then(updata => {
+            .then(update => {
                 var id = $(this).attr('uid');
-                if (updata) {
+                if (update) {
                     $.ajax({
                         url: $(this).attr('url'),
                         type: 'get',
                         data: {
-                            updata: updata,
+                            update: update,
                         },
                         success: (data) => {
                             if (data.status === 200) {
-                                $("tr:eq(" + id + ") td:eq(2)").html(updata);
+                                $("tr:eq(" + id + ") td:eq(2)").html(update);
                             }
                         }
                     })
-                    return updata;
+                    return update;
                 }
             })
             .then((value) => {

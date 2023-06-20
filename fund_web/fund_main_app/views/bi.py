@@ -1,18 +1,11 @@
 # -*- coding: utf-8 -*-
-from django.core.paginator import Paginator
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 import pymysql
 import json
 import re
 import requests
 from django.views import View
 import time
-import fund_main_app.web_socket
-import datetime
-from django.http import JsonResponse
-import hashlib
-from chinese_calendar import is_workday
-import datetime
 from bs4 import BeautifulSoup
 
 from fund_web.settings import DB_PASSWORD, DB_IPADDRESS
@@ -83,7 +76,7 @@ def _get_textvalue():  # 最新消息
     return value
 
 
-class FundDb(object):  # 数据object
+class FundDb(object):  # 数据库object
     @staticmethod
     def db():
         db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
@@ -92,7 +85,7 @@ class FundDb(object):  # 数据object
         return db, cursor
 
 
-class Bi(View, FundDb):  # 数据大屏
+class Home(View, FundDb):  # 数据大屏
     def _config(self):
         db, cursor = self.db()
         sql = "select config  from config_table"
@@ -234,190 +227,6 @@ class Bi(View, FundDb):  # 数据大屏
         new_date = time.mktime(time.strptime(t, "%Y-%m-%d"))
         ret.set_cookie("new_date", new_date, expires=60 * 60 * 24)
         return ret
-
-
-class Config(View, FundDb):  # 基金概括设置
-    def _up_cofig(self, m, date, money):
-        db, cursor = self.db()
-        sql = "select config from config_table"
-        cursor.execute(sql)
-        config = cursor.fetchall()
-        config = json.loads(config[0]["config"])
-        # 修订config数据处
-        config["m"], config["date"], config["money"] = m, date, money
-        config = json.dumps(config)
-        sql = "update config_table set config='{}' where id=1".format(config)
-        cursor.execute(sql)
-        db.commit()
-        db.close()
-        fund_main_app.web_socket.main("reboot")
-
-    def get(self, request):
-        m, date, money, now_money = request.COOKIES.get('m'), request.COOKIES.get('date'), request.COOKIES.get(
-            'money'), request.COOKIES.get('now_money')
-        user = request.COOKIES.get("user")
-        new = datetime.datetime.now().date()
-        if not is_workday(new) or (time.localtime().tm_hour >= 22 or time.localtime().tm_hour <= 13) or (
-                time.localtime().tm_hour == 14 and time.localtime().tm_min < 50):
-            if not m:
-                m, date, money, now_money = "5", "14:55", "4000", "****"
-            return render(request, "config.html", {
-                "m": m, "date": date, "money": money, "now_money": now_money,
-                "user": user,
-            })
-        else:
-            return redirect("Error")
-
-    def post(self, request):
-        m, date, money = request.POST.get("m"), request.POST.get("date"), int(request.POST.get("money")) // 4
-        date = date.split(":")
-        self._up_cofig(m, date, money)
-        return redirect("Bi")
-
-
-class WeekData(View, FundDb):  # 周数据
-    def _select_data(self):
-        db, cursor = self.db()
-        sql = "select * from week_journal"
-        cursor.execute(sql)
-        week_journal = cursor.fetchall()
-        for i in week_journal:
-            i["cr_date"] = datetime.datetime.strftime(i["cr_date"], '%Y-%m-%d %H:%M:%S')
-        return week_journal
-
-    def get(self, request):
-        week_journal = self._select_data()
-        user = request.COOKIES.get("user")
-        return render(request, "data_list.html", {
-            "journal": week_journal,
-            "user": user,
-            "table_name": "week_journal",
-        })
-
-
-class Paginator(object):  # 分页
-    def __init__(self, data_list, pag):
-        self.data_list = []
-        self.sumnum = len(data_list)
-        s = len(data_list)
-        for i in range(0, s, pag):
-            self.data_list.append(data_list[i:i + pag if i + pag < s else s])
-
-    def get_page(self, page):
-        return self.data_list[page]
-
-    def get_sum_page(self):
-        sum_page = [i + 1 for i in range(len(self.data_list))]
-        return sum_page
-
-    def get_sumnum(self):
-        return self.sumnum
-
-
-class SumData(View, FundDb):  # 总数据
-    def _select_data(self, pag=0):
-        db, cursor = self.db()
-        sql = "select * from sum_journal ORDER BY id DESC LIMIT 100"
-        cursor.execute(sql)
-        sum_journal = cursor.fetchall()
-        for i in sum_journal:
-            i["cr_date"] = datetime.datetime.strftime(i["cr_date"], '%Y-%m-%d %H:%M:%S')
-        paginator = Paginator(sum_journal, 10)
-        deal_list = paginator.get_page(pag)
-        sum_page = paginator.get_sum_page()
-        sumnum = paginator.get_sumnum()
-        return deal_list, sum_page, sumnum
-
-    def get(self, request):
-        pag = request.GET.get("pag", 0)
-        pag = int(pag)
-        if pag > 1: pag = pag - 1
-        sum_journal, sum_page, sumnum = self._select_data(pag)
-        user = request.COOKIES.get("user")
-        return render(request, "data_list.html", {
-            "journal": sum_journal,
-            "user": user,
-            "table_name": "sum_journal",
-            "sum_page": sum_page,
-            "last_page": pag if pag > 1 else 1,
-            "next_page": pag + 2 if pag + 2 < 10 else 10,
-            "sumnum": sumnum,
-            "start_page": pag * 10,
-            "end_page": len(sum_journal) + pag * 10 - 1,
-        })
-
-
-class Delete(View, FundDb):  # 总/周数据的删除
-    def get(self, request, dele_obj, pk):
-        db, cursor = self.db()
-        sql = "delete from {} where id={}".format(dele_obj, pk)
-        cursor.execute(sql)
-        db.commit()
-        db.close()
-        return JsonResponse({"status": 200})
-
-
-class FundInf(View, FundDb):  # 个基金数据
-    def _inf(self):
-        db, cursor = self.db()
-        sql = "select * from fund_inf"
-        cursor.execute(sql)
-        inf_data = cursor.fetchall()
-        return inf_data
-
-    def get(self, request):
-        inf_data = self._inf()
-        user = request.COOKIES.get("user")
-        return render(request, "fund_inf.html", {
-            "inf_data": inf_data,
-            "user": user,
-        })
-
-
-class Updata(View, FundDb):  # 总/周数据编辑
-    def get(self, request, updata_obj, pk):
-        value = "hold"
-        if updata_obj != "fund_inf":
-            value = "cr_change"
-        db, cursor = self.db()
-        updata = request.GET.get("updata")
-        sql = "update {} set {}={} where id={}".format(updata_obj, value, updata, pk)
-        cursor.execute(sql)
-        db.commit()
-        db.close()
-        return JsonResponse({"status": 200})
-
-
-class login(View, FundDb):  # 登录
-    def get(self, request):
-        return render(request, "login.html", {"color": "form-control"})
-
-    def post(self, request):
-        user = request.POST.get("user")
-        password = request.POST.get("password")
-        password_obj = hashlib.sha256()
-        password_obj.update(password.encode("utf-8"))
-        password_sha = password_obj.hexdigest()
-        db, cursor = self.db()
-        sql = "select password from login where user='{}'".format(user)
-        cursor.execute(sql)
-        password_db = cursor.fetchall()
-        if len(password_db) != 0 and (password_sha == password_db[0]["password"]):
-            ret = redirect("Bi")
-            user_obj = hashlib.sha256()
-            user_obj.update(user.encode("utf-8"))
-            login_status = user_obj.hexdigest()
-            ret.set_cookie("login_status", login_status, expires=60 * 60 * 24)
-            request.session[login_status] = login_status
-            ret.set_cookie("user", user)
-            return ret
-        else:
-            return render(request, "login.html", {"color": "form-control-red", "err": "账号密码错误"})
-
-
-class FundFloatSet(View, FundDb):  # 基金涨幅设置
-    def get(self, request):
-        return render(request, "fund_float_set.html")
 
 
 class Error(View):  # 404

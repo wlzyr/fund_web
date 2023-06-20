@@ -23,7 +23,7 @@
                 <td>{{ i.fund_id }}</td>
                 <td>{{ i.hold }}</td>
                 <td>{{ i.ch_name }}</td>
-                <td><a url="{% url 'Updata' 'fund_inf' i.id %}" uid="{{ forloop.counter }}"
+                <td><a url="{% url 'Update' 'fund_inf' i.id %}" uid="{{ forloop.counter }}"
                        class="btn btn-primary btn-icon-split"><span class="text">更改</span></a></td>
             </tr>
             {% endfor %}
@@ -46,22 +46,22 @@
                 if (!new_hold) throw null;
                 return new_hold;
             })
-            .then(updata => {
+            .then(update => {
                 var id = $(this).attr('uid');
-                if (updata) {
+                if (update) {
                     $.ajax({
                         url: $(this).attr('url'),
                         type: 'get',
                         data: {
-                            updata: updata,
+                            update: update,
                         },
                         success: (data) => {
                             if (data.status === 200) {
-                                $("tr:eq(" + id + ") td:eq(2)").html(updata);
+                                $("tr:eq(" + id + ") td:eq(2)").html(update);
                             }
                         }
                     })
-                    return updata;
+                    return update;
                 }
             })
             .then((value) => {

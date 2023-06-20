@@ -1,4 +1,8 @@
 {% extends 'blank.html' %}
+{% block script %}
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+{% endblock %}
 {% block data %}
 <style>
     .container {
@@ -21,8 +25,11 @@
 </style>
 
 <div class="container">
-    <input type="text" class="input-box" placeholder="输入基金ID...">
-    <button class="btn btn-primary" style="margin-left: 10px">添加</button>
+    <form method="post">
+        {% csrf_token %}
+        <input type="text" class="input-box" placeholder="输入基金ID..." name="fund_id">
+        <button class="btn btn-primary" style="margin-left: 10px" type="submit">添加</button>
+    </form>
 </div>
 <div class="card-body">
     <div class="table-responsive">
@@ -31,11 +38,57 @@
             <tr>
                 <th>ID</th>
                 <th>基金ID</th>
-                <th>加仓</th>
+                <th>基金名称</th>
                 <th>操作</th>
             </tr>
             </thead>
+            <tfoot>
+            {% for fund in fund_list %}
+            <tr id="{{ forloop.counter }}">
+                <td>{{ fund.id }}</td>
+                <td>{{ fund.fund_id }}</td>
+                <td>{{ fund.name }}</td>
+                <td><a url="{% url 'Delete' 'new_fund_Increase' fund.id %}" class="btn btn-danger btn-icon-split"><span
+                        class="text">删除</span></a></td>
+            </tr>
+            {% endfor %}
+            </tfoot>
         </table>
     </div>
 </div>
+
+<script>
+    $('.btn-danger').click(function () {
+        swal({
+            title: "确认是否删除?",
+            text: "删除后数据无法恢复！",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        url: $(this).attr('url'),
+                        type: 'get',
+                        success: (data) => {
+                            if (data.status === 200) {
+                                $(this).parent().parent().remove()
+                                swal("删除成功！", {
+                                    icon: "success",
+                                });
+                            } else {
+                                swal("无法删除！", {
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    })
+                } else {
+                    swal("你的数据安全了!");
+                }
+            });
+    })
+
+</script>
 {% endblock %}
