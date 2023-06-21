@@ -26,14 +26,16 @@ class Config(View, FundDb):  # 基金概括设置
         cursor.execute(sql)
         config = cursor.fetchall()
         config = json.loads(config[0]["config"])
+        is_restart = True
         # 修订config数据处
+        if config["date"] == date: is_restart = False
         config["m"], config["date"], config["money"] = m, date, money
         config = json.dumps(config)
         sql = "update config_table set config='{}' where id=1".format(config)
         cursor.execute(sql)
         db.commit()
         db.close()
-        fund_main_app.web_socket.main("reboot")
+        if is_restart: fund_main_app.web_socket.main("reboot")
 
     def get(self, request):
         m, date, money, now_money = request.COOKIES.get('m'), request.COOKIES.get('date'), request.COOKIES.get(

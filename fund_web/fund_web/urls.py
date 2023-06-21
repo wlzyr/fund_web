@@ -31,8 +31,8 @@ urlpatterns = [
     re_path(r'del_(\w+_\w+)/(\d+)/', Delete.as_view(), name="Delete"),  # 总/周数据的删除
     re_path(r'update_(\w+_\w+)/(\d+)/', Update.as_view(), name="Update"),  # 总/周/个人数据编辑
 
-    path('fund/float/set/', FundFloatSet.as_view(), name="fund_float_set"),  # 基金概括设置
-    path('config/', Config.as_view(), name="Config"),  # 基金涨幅设置
+    path('config/', Config.as_view(), name="Config"),  # 基金概括设置
+    path('fund/float/set/', FundFloatSet.as_view(), name="fund_float_set"),  # 基金涨幅设置
 
     path('error/', Error.as_view(), name="Error"),  # 错误页面
 ]
