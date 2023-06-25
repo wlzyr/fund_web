@@ -25,7 +25,6 @@ urlpatterns = [
     path("", Login.as_view(), name="login"),  # 登录
 
     path('index/', Home.as_view(), name="Bi"),  # 数据大屏
-    path('select/fund/', SelectFund.as_view(), name="SelectFund"),  # 数据大屏
 
     path('week/data/', WeekData.as_view(), name="WeekData"),  # 周数据
     path('sum/data/', SumData.as_view(), name="SumData"),  # 总数据
