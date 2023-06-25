@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from views.authentication import Login
-from views.bi import Home, Error, SelectFund
+from views.bi import Home, Error
 from views.data import FundInf, Delete, Update, SumData, WeekData
 from views.fund_date_set import FundFloatSet, Config
 from views.simulate import StrategySimulate, StrategyImport
