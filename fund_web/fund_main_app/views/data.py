@@ -124,7 +124,8 @@ class Update(View, FundDb):  # 总/周/个人数据编辑
             value = "cr_change"
         db, cursor = self.db()
         update = request.GET.get("update")
-        sql = "update {} set {}={} where id={}".format(update_obj, value, update, pk)
+        sql = "update {} set {}={} where id={};".format(update_obj, value, update, pk)
+        print(sql)
         cursor.execute(sql)
         db.commit()
         db.close()

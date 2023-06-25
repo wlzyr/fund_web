@@ -1,6 +1,5 @@
 {% extends 'blank.html' %}
 {% block script %}
-<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 {% endblock %}
 {% block data %}
@@ -27,7 +26,7 @@
 <div class="container">
     <form method="post">
         {% csrf_token %}
-        <input type="text" class="input-box" placeholder="输入基金ID..." name="fund_id">
+        <input type="text" class="input-box" placeholder="添加基金..." name="fund_id">
         <button class="btn btn-primary" style="margin-left: 10px" type="submit">添加</button>
     </form>
 </div>

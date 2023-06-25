@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 import pymysql
 import json
 import re
@@ -227,6 +227,13 @@ class Home(View, FundDb):  # 数据大屏
         new_date = time.mktime(time.strptime(t, "%Y-%m-%d"))
         ret.set_cookie("new_date", new_date, expires=60 * 60 * 24)
         return ret
+
+
+class SelectFund(View):
+    def get(self, request):
+        fund_id = request.GET.get("fund")
+        print(fund_id)
+        return redirect("https://www.baidu.com")
 
 
 class Error(View):  # 404

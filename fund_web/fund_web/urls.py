@@ -16,14 +16,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, re_path
 from views.authentication import Login
-from views.bi import Home, Error
+from views.bi import Home, Error, SelectFund
 from views.data import FundInf, Delete, Update, SumData, WeekData
 from views.fund_date_set import FundFloatSet, Config
+from views.simulate import StrategySimulate, StrategyImport
 
 urlpatterns = [
     path("", Login.as_view(), name="login"),  # 登录
 
     path('index/', Home.as_view(), name="Bi"),  # 数据大屏
+    path('select/fund/', SelectFund.as_view(), name="SelectFund"),  # 数据大屏
 
     path('week/data/', WeekData.as_view(), name="WeekData"),  # 周数据
     path('sum/data/', SumData.as_view(), name="SumData"),  # 总数据
@@ -32,7 +34,10 @@ urlpatterns = [
     re_path(r'update_(\w+_\w+)/(\d+)/', Update.as_view(), name="Update"),  # 总/周/个人数据编辑
 
     path('config/', Config.as_view(), name="Config"),  # 基金概括设置
-    path('fund/float/set/', FundFloatSet.as_view(), name="fund_float_set"),  # 基金涨幅设置
+    path('fund/float/set/', FundFloatSet.as_view(), name="FundFloatSet"),  # 基金涨幅设置
+
+    path('simulate/', StrategySimulate.as_view(), name="StrategySimulate"),  # 策略模拟
+    path('import/', StrategyImport.as_view(), name="StrategyImport"),  # 策略模拟
 
     path('error/', Error.as_view(), name="Error"),  # 错误页面
 ]

@@ -22,6 +22,7 @@
 </head>
 
 <body id="page-top">
+<script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
 {% block script %}
 {% endblock %}
 <!-- Page Wrapper -->
@@ -53,7 +54,7 @@
 
         <!-- Heading -->
         <div class="sidebar-heading">
-            数据
+            维护
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->
@@ -61,7 +62,7 @@
             <a aria-controls="collapseTwo" aria-expanded="true" class="nav-link collapsed" data-target="#collapseTwo"
                data-toggle="collapse" href="#">
                 <i class="fas fa-fw fa-cog"></i>
-                <span>周数据&个基金数据</span>
+                <span>基金数据</span>
             </a>
             <div aria-labelledby="headingTwo" class="collapse" data-parent="#accordionSidebar" id="collapseTwo">
                 <div class="bg-white py-2 collapse-inner rounded">
@@ -84,7 +85,7 @@
                  id="collapseUtilities">
                 <div class="bg-white py-2 collapse-inner rounded">
                     <a class="collapse-item" href="{% url 'Config' %}">基金概括设置</a>
-                    <a class="collapse-item" href="{% url 'fund_float_set' %}">基金涨幅设置</a>
+                    <a class="collapse-item" href="{% url 'FundFloatSet' %}">基金涨幅设置</a>
                 </div>
             </div>
         </li>
@@ -94,43 +95,23 @@
 
         <!-- Heading -->
         <div class="sidebar-heading">
-            Addons
+            模拟
         </div>
 
         <!-- Nav Item - Pages Collapse Menu -->
-        <li class="nav-item">
-            <a aria-controls="collapsePages" aria-expanded="true" class="nav-link collapsed"
-               data-target="#collapsePages"
-               data-toggle="collapse" href="#">
-                <i class="fas fa-fw fa-folder"></i>
-                <span>Pages</span>
-            </a>
-            <div aria-labelledby="headingPages" class="collapse" data-parent="#accordionSidebar" id="collapsePages">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <h6 class="collapse-header">Login Screens:</h6>
-                    <a class="collapse-item" href="login.html">Login</a>
-                    <a class="collapse-item" href="register.html">Register</a>
-                    <a class="collapse-item" href="forgot-password.html">Forgot Password</a>
-                    <div class="collapse-divider"></div>
-                    <h6 class="collapse-header">Other Pages:</h6>
-                    <a class="collapse-item" href="404.html">404 Page</a>
-                    <a class="collapse-item" href="blank.html">Blank Page</a>
-                </div>
-            </div>
-        </li>
 
         <!-- Nav Item - Charts -->
         <li class="nav-item">
-            <a class="nav-link" href="charts.html">
+            <a class="nav-link" href="{% url 'StrategySimulate' %}">
                 <i class="fas fa-fw fa-chart-area"></i>
-                <span>Charts</span></a>
+                <span>策略模拟</span></a>
         </li>
 
         <!-- Nav Item - Tables -->
         <li class="nav-item">
-            <a class="nav-link" href="tables.html">
+            <a class="nav-link" href="{% url 'StrategyImport' %}">
                 <i class="fas fa-fw fa-table"></i>
-                <span>Tables</span></a>
+                <span>策略导入</span></a>
         </li>
 
         <!-- Divider -->
@@ -142,12 +123,12 @@
         </div>
 
         <!-- Sidebar Message -->
-        <div class="sidebar-card d-none d-lg-flex">
-            <img alt="..." class="sidebar-card-illustration mb-2" src="/static/img/undraw_rocket.svg">
-            <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and
-                more!</p>
-            <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
-        </div>
+        <!--        <div class="sidebar-card d-none d-lg-flex">-->
+        <!--            <img alt="..." class="sidebar-card-illustration mb-2" src="/static/img/undraw_rocket.svg">-->
+        <!--            <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and-->
+        <!--                more!</p>-->
+        <!--            <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>-->
+        <!--        </div>-->
 
     </ul>
     <!-- End of Sidebar -->
@@ -172,14 +153,21 @@
                     <div class="input-group">
                         <input aria-describedby="basic-addon2" aria-label="Search"
                                class="form-control bg-light border-0 small"
-                               placeholder="Search for..." type="text">
+                               placeholder="查询基金..." type="text" name="fund">
                         <div class="input-group-append">
                             <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search fa-sm"></i>
+                                <a id="fund_url"><i class="fas fa-search fa-sm" style="color: #fff"></i></a>
                             </button>
                         </div>
                     </div>
                 </form>
+                <script>
+                    $('.btn-primary').click(function () {
+                        var fund = $(".form-control").val()
+                        console.log(fund)
+                        setTimeout(window.open("https://fund.eastmoney.com/" + fund + ".html"), 500);
+                    })
+                </script>
 
                 <!-- Topbar Navbar -->
                 <ul class="navbar-nav ml-auto">

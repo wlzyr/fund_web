@@ -42,7 +42,9 @@ class Config(View, FundDb):  # 基金概括设置
             'money'), request.COOKIES.get('now_money')
         user = request.COOKIES.get("user")
         new = datetime.datetime.now().date()
-        if not is_workday(new) or (time.localtime().tm_hour >= 22 or time.localtime().tm_hour <= 13) or (
+        is_week_end = datetime.datetime.today().weekday()
+        if not is_workday(new) or (
+                time.localtime().tm_hour >= 22 or time.localtime().tm_hour <= 13) or is_week_end >= 5 or (
                 time.localtime().tm_hour == 14 and time.localtime().tm_min < 50):
             if not m:
                 m, date, money, now_money = "5", "14:55", "4000", "****"
@@ -92,4 +94,4 @@ class FundFloatSet(View, FundDb):  # 基金涨幅设置
             cursor.execute(sql)
             db.commit()
             db.close()
-        return redirect("fund_float_set")
+        return redirect("FundFloatSet")
