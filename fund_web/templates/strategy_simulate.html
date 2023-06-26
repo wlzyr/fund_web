@@ -1,1 +1,207 @@
 {% extends 'blank.html' %}
+{% block script %}
+<script type="text/javascript" src="https://fastly.jsdelivr.net/npm/echarts@5.4.2/dist/echarts.min.js"></script>
+{% endblock %}
+{% block data %}
+<style>
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 5%;
+        margin-bottom: 3%;
+    }
+
+    .input-box {
+        width: 300;
+        height: 45px;
+        border: 2px solid #4e73df;
+        border-radius: 20px;
+        padding: 10px;
+        font-size: 18px;
+        color: #000000;
+    }
+
+    .select-box {
+        height: 45px;
+        border: 2px solid #4e73df;
+        border-radius: 10px;
+        padding: 10px;
+        font-size: 18px;
+        color: #000000;
+    }
+
+    .button-box {
+        margin-left: 10px;
+        height: 45px;
+        margin-top: -1%;
+    }
+
+</style>
+<div class="container">
+    <form method="post">
+        {% csrf_token %}
+        基金ID：<input type="text" class="input-box" placeholder="请输入基金..." name="fund_id">
+        时间：<select name="date" class="select-box">
+        <option value="1">一个月</option>
+        <option value="2">一年</option>
+        <option value="3">至今</option>
+    </select>
+        策略：<select name="strategy" class="select-box">
+        <option value="1">demo1</option>
+        <option value="2">demo2</option>
+    </select>
+        <button class="btn btn-primary" style="margin-left: 10px; height: 45px; margin-top: -1%;" type="submit">
+            开始模拟
+        </button>
+    </form>
+</div>
+<div id="profit_loss" style="height: 40%"></div>
+<div id="money" style="height: 40%;"></div>
+<script type="text/javascript">
+    var dom = document.getElementById('profit_loss');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+
+    var option;
+
+    let base = +new Date(2000, 9, 3);
+    let oneDay = 24 * 3600 * 1000;
+    let data = [[base, Math.random() * 300]];
+    for (let i = 1; i < 20000; i++) {
+      let now = new Date((base += oneDay));
+      data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
+    }
+    window.alert(data)
+    option = {
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
+        }
+      },
+      title: {
+        left: 'center',
+        text: '盈亏情况'
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: 'none'
+          },
+          restore: {},
+          saveAsImage: {}
+        }
+      },
+      xAxis: {
+        type: 'time',
+        boundaryGap: false
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%']
+      },
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 0,
+          end: 20
+        },
+        {
+          start: 0,
+          end: 20
+        }
+      ],
+      series: [
+        {
+          name: 'Fake Data',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          areaStyle: {},
+          data: data
+        }
+      ]
+    };
+
+        if (option && typeof option === 'object') {
+          myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+</script>
+<script type="text/javascript">
+    var dom = document.getElementById('money');
+    var myChart = echarts.init(dom, null, {
+      renderer: 'canvas',
+      useDirtyRect: false
+    });
+    var app = {};
+
+    var option;
+
+    for (let i = 1; i < 20000; i++) {
+      let now = new Date((base += oneDay));
+      data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
+    }
+    option = {
+      tooltip: {
+        trigger: 'axis',
+        position: function (pt) {
+          return [pt[0], '10%'];
+        }
+      },
+      title: {
+        left: 'center',
+        text: '使用金额'
+      },
+      toolbox: {
+        feature: {
+          dataZoom: {
+            yAxisIndex: 'none'
+          },
+          restore: {},
+          saveAsImage: {}
+        }
+      },
+      xAxis: {
+        type: 'time',
+        boundaryGap: false
+      },
+      yAxis: {
+        type: 'value',
+        boundaryGap: [0, '100%']
+      },
+      dataZoom: [
+        {
+          type: 'inside',
+          start: 0,
+          end: 20
+        },
+        {
+          start: 0,
+          end: 20
+        }
+      ],
+      series: [
+        {
+          name: 'Fake Data',
+          type: 'line',
+          smooth: true,
+          symbol: 'none',
+          areaStyle: {},
+          data: data
+        }
+      ]
+    };
+
+        if (option && typeof option === 'object') {
+          myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+</script>
+{% endblock %}
