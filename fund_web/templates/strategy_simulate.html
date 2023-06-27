@@ -42,14 +42,15 @@
     <form method="post">
         {% csrf_token %}
         基金ID：<input type="text" class="input-box" placeholder="请输入基金..." name="fund_id">
+        金额：<input type="text" class="input-box" value="10000" name="sum_money" readonly="readonly" style="background-color: #d9d9d9">
         时间：<select name="date" class="select-box">
-        <option value="1">一个月</option>
-        <option value="2">一年</option>
-        <option value="3">至今</option>
+        <option value="1">1个月</option>
+        <option value="2">6个月</option>
+        <option value="3">12个月</option>
     </select>
         策略：<select name="strategy" class="select-box">
-        <option value="1">demo1</option>
-        <option value="2">demo2</option>
+        <option value="demo1">demo1</option>
+        <option value="demo2">demo2</option>
     </select>
         <button class="btn btn-primary" style="margin-left: 10px; height: 45px; margin-top: -1%;" type="submit">
             开始模拟
@@ -58,6 +59,7 @@
 </div>
 <div id="profit_loss" style="height: 40%"></div>
 <div id="money" style="height: 40%;"></div>
+{% if is_post == 1 %}
 <script type="text/javascript">
     var dom = document.getElementById('profit_loss');
     var myChart = echarts.init(dom, null, {
@@ -68,14 +70,7 @@
 
     var option;
 
-    let base = +new Date(2000, 9, 3);
-    let oneDay = 24 * 3600 * 1000;
-    let data = [[base, Math.random() * 300]];
-    for (let i = 1; i < 20000; i++) {
-      let now = new Date((base += oneDay));
-      data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
-    }
-    window.alert(data)
+    data = {{ profit_loss_list }}
     option = {
       tooltip: {
         trigger: 'axis',
@@ -143,10 +138,7 @@
 
     var option;
 
-    for (let i = 1; i < 20000; i++) {
-      let now = new Date((base += oneDay));
-      data.push([+now, Math.round((Math.random() - 0.5) * 20 + data[i - 1][1])]);
-    }
+    data = {{ money_list }}
     option = {
       tooltip: {
         trigger: 'axis',
@@ -204,4 +196,5 @@
 
         window.addEventListener('resize', myChart.resize);
 </script>
+{% endif %}
 {% endblock %}
