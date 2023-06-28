@@ -1,0 +1,73 @@
+{% extends 'blank.html' %}
+{% block script %}
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+{% endblock %}
+{% block data %}
+<div class="card-body">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>基金ID</th>
+                <th>盈亏情况</th>
+                <th>策略</th>
+                <th>时长</th>
+                <th>最高使用金额</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for i in logs %}
+            <tr>
+                <td>{{ i.id }}</td>
+                <td>{{i.fund_id}}</td>
+                <td>{{i.profit_loss}}</td>
+                <td>{{i.strategy}}</td>
+                <td>{{i.date_type}}</td>
+                <td>{{i.top_money}}</td>
+                <td><a url="{% url 'Delete' table_name  i.id %}" class="btn btn-danger btn-icon-split btn-delete"><span
+                        class="text">删除</span></a>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    $('.btn-delete').click(function () {
+        swal({
+            title: "确认是否删除?",
+            text: "删除后数据无法恢复！",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $.ajax({
+                        url: $(this).attr('url'),
+                        type: 'get',
+                        success: (data) => {
+                            if (data.status === 200) {
+                                $(this).parent().parent().remove()
+                                swal("删除成功！", {
+                                    icon: "success",
+                                });
+                            } else {
+                                swal("无法删除！", {
+                                    icon: "error"
+                                });
+                            }
+                        }
+                    })
+                } else {
+                    swal("你的数据安全了!");
+                }
+            });
+    })
+</script>
+
+
+{% endblock %}

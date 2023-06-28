@@ -1,9 +1,21 @@
 import re
 
+import pymysql
 import requests
 from django.shortcuts import render, redirect
 import importlib
 from django.views import View
+
+from fund_web.settings import DB_IPADDRESS, DB_PASSWORD
+
+
+class FundDb(object):  # 数据库object
+    @staticmethod
+    def db():
+        db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
+                             cursorclass=pymysql.cursors.DictCursor)
+        cursor = db.cursor()
+        return db, cursor
 
 
 class fund_date(object):  # 策略模拟数据
@@ -42,17 +54,36 @@ class fund_date(object):  # 策略模拟数据
         return fund_dict  # {时间:[净值,涨幅]}
 
 
+class StrategyData(FundDb):
+    def data(self):
+        strategy_list = []
+        db, cursor = self.db()
+        sql = """select file_name from strategys;"""
+        cursor.execute(sql)
+        for strategy in cursor.fetchall():
+            strategy_list.append(strategy["file_name"])
+        db.close()
+        return strategy_list
+
+
 class StrategySimulate(View):  # 策略模拟
     def get(self, request):
         user = request.COOKIES.get("user")
-        return render(request, "strategy_simulate.html",
-                      {"user": user, "is_post": 0})
+        strategy_list_obj = StrategyData()
+        strategy_list = strategy_list_obj.data()
+        return render(request, "strategy_simulate.html", {
+            "user": user,
+            "is_post": 0,
+            "strategy_list": strategy_list
+        })
 
     def post(self, request):
         user = request.COOKIES.get("user")
         fund_id = request.POST.get("fund_id")
         date_type = request.POST.get("date")
         strategy = request.POST.get("strategy")
+        strategy_list_obj = StrategyData()
+        strategy_list = strategy_list_obj.data()
 
         try:
             fund_obj = fund_date(fund_id, date_type)
@@ -60,14 +91,37 @@ class StrategySimulate(View):  # 策略模拟
             if not date: return redirect("Error")
             strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
             strategy_obj = strategy()
-            profit_loss_list, money_list = strategy_obj.main(date)
+            profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
         except:
             return redirect("Error")
-        return render(request, "strategy_simulate.html",
-                      {"user": user, "profit_loss_list": profit_loss_list, "money_list": money_list, "is_post": 1})
+        return render(request, "strategy_simulate.html", {
+            "user": user,
+            "profit_loss_list": profit_loss_list,
+            "money_list": money_list,
+            "is_post": 1,
+            "strategy_list": strategy_list
+        })
 
 
 class StrategyImport(View):
     def get(self, request):
         user = request.COOKIES.get("user")
         return render(request, "strategy_import.html", {"user": user})
+
+
+class SimulateLog(View, FundDb):
+    def get(self, request):
+        user = request.COOKIES.get("user")
+        sql = """select * from simulate_log;"""
+        db, cursor = self.db()
+        cursor.execute(sql)
+        logs = cursor.fetchall()
+        for log in logs:
+            if log["date_type"] == 1: log["date_type"] = "1个月"
+            if log["date_type"] == 2: log["date_type"] = "6个月"
+            if log["date_type"] == 3: log["date_type"] = "12个月"
+        return render(request, "simulate_log.html", {
+            "user": user,
+            "table_name": "simulate_log",
+            "logs": logs
+        })

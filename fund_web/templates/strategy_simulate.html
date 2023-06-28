@@ -49,8 +49,9 @@
         <option value="3">12个月</option>
     </select>
         策略：<select name="strategy" class="select-box">
-        <option value="demo1">demo1</option>
-        <option value="demo2">demo2</option>
+        {% for strategy in strategy_list %}
+           <option value="{{ strategy }}">{{ strategy }}</option>
+        {% endfor %}
     </select>
         <button class="btn btn-primary" style="margin-left: 10px; height: 45px; margin-top: -1%;" type="submit">
             开始模拟

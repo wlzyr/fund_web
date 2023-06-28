@@ -19,7 +19,7 @@ from views.authentication import Login
 from views.bi import Home, Error
 from views.data import FundInf, Delete, Update, SumData, WeekData
 from views.fund_date_set import FundFloatSet, Config
-from views.simulate import StrategySimulate, StrategyImport
+from views.simulate import StrategySimulate, StrategyImport, SimulateLog
 
 urlpatterns = [
     path("", Login.as_view(), name="login"),  # 登录
@@ -37,6 +37,7 @@ urlpatterns = [
 
     path('simulate/', StrategySimulate.as_view(), name="StrategySimulate"),  # 策略模拟
     path('import/', StrategyImport.as_view(), name="StrategyImport"),  # 策略模拟
+    path('simulate/log/', SimulateLog.as_view(), name="SimulateLog"),  # 策略模拟
 
     path('error/', Error.as_view(), name="Error"),  # 错误页面
 ]

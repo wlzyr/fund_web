@@ -8,11 +8,12 @@ from fund_web.settings import DB_IPADDRESS, DB_PASSWORD
 
 class fund_sql(object):
     def __init__(self):
-        self.db = pymysql.connect(host=DB_IPADDRESS, user="root", password=DB_PASSWORD, database="fund_test")
+        self.db = pymysql.connect(host=DB_IPADDRESS, user="root", password=DB_PASSWORD, database="fund")
         self.cursor = self.db.cursor()
         self.sum_money = decimal.Decimal('0')
         self.sum_wave = decimal.Decimal('0')
         self.profit_loss = decimal.Decimal('0')
+        self.top_money = decimal.Decimal('0')
         self.sum_money_list = []
         self.sum_wave_list = []
 
@@ -27,12 +28,13 @@ class fund_sql(object):
         buy_num = decimal.Decimal(str(buy_num))
         worth = decimal.Decimal(str(worth))
         self.sum_money = self.sum_money + buy_num
+        self.top_money = self.sum_money if self.top_money < self.sum_money else self.top_money
         hold = buy_num / worth
-        sql_week = """INSERT INTO week_journal(fund_id,cr_change,cr_date,ch_name) VALUES("{}","{}","{}","{}");""".format(
+        sql_week = """INSERT INTO week_journal_test(fund_id,cr_change,cr_date,ch_name) VALUES("{}","{}","{}","{}");""".format(
             id, hold, strTime, file_name)
         self.cursor.execute(sql_week)
         self.db.commit()
-        sql_sum = """INSERT INTO sum_journal(fund_id,cr_change,cr_date,ch_name,profit_loss) VALUES("{}","{}","{}","{}","{}");""".format(
+        sql_sum = """INSERT INTO sum_journal_test(fund_id,cr_change,cr_date,ch_name,profit_loss) VALUES("{}","{}","{}","{}","{}");""".format(
             id, hold, strTime, file_name, self.profit_loss)
         self.cursor.execute(sql_sum)
         self.db.commit()
@@ -49,12 +51,13 @@ class fund_sql(object):
         sell_num = decimal.Decimal(str(sell_num))
         worth = decimal.Decimal(str(worth))
         self.sum_money = self.sum_money - (sell_num * worth)
-        sql_sum = """INSERT INTO sum_journal(fund_id,cr_change,cr_date,ch_name,profit_loss) VALUES("{}","{}","{}","{}","{}");""".format(
+        sql_sum = """INSERT INTO sum_journal_test(fund_id,cr_change,cr_date,ch_name,profit_loss) VALUES("{}","{}","{}","{}","{}");""".format(
             id, sell_num * -1, strTime, ch_name, self.profit_loss)
         self.cursor.execute(sql_sum)
         self.db.commit()
-        update_sql = """UPDATE fund_inf SET hold=hold+{} WHERE fund_id='{}'AND ch_name='{}';""".format(sell_num * -1,
-                                                                                                       id, ch_name)
+        update_sql = """UPDATE fund_inf_test SET hold=hold+{} WHERE fund_id='{}'AND ch_name='{}';""".format(
+            sell_num * -1,
+            id, ch_name)
         self.cursor.execute(update_sql)
         self.db.commit()
         self.sum_money_list.append(self.sum_money)
@@ -63,16 +66,17 @@ class fund_sql(object):
         """
         :param date: 时间
         """
-        select_sql = """select * from week_journal where DATE_SUB("{}", INTERVAL 7 DAY) >= date(cr_date);""".format(
+        select_sql = """select * from week_journal_test where DATE_SUB("{}", INTERVAL 7 DAY) >= date(cr_date);""".format(
             date)
         self.cursor.execute(select_sql)
         data = self.cursor.fetchall()
         for ii in data:
-            update_sql = """UPDATE fund_inf SET hold=hold+{} WHERE fund_id='{}'AND ch_name='{}';""".format(ii[2], ii[1],
-                                                                                                           ii[4])
+            update_sql = """UPDATE fund_inf_test SET hold=hold+{} WHERE fund_id='{}'AND ch_name='{}';""".format(ii[2],
+                                                                                                                ii[1],
+                                                                                                                ii[4])
             self.cursor.execute(update_sql)
             self.db.commit()
-            delete_sql = """DELETE FROM week_journal WHERE id={};""".format(ii[0])
+            delete_sql = """DELETE FROM week_journal_test WHERE id={};""".format(ii[0])
             self.cursor.execute(delete_sql)
             self.db.commit()
         self.db.commit()
@@ -82,7 +86,7 @@ class fund_sql(object):
         :param id: 基金ID
         :return: 持仓数量
         """
-        select_sql = """SELECT hold FROM fund_inf where fund_id='{}';""".format(str(id))
+        select_sql = """SELECT hold FROM fund_inf_test where fund_id='{}';""".format(str(id))
         self.cursor.execute(select_sql)
         data = self.cursor.fetchall()[0][0]
         return data
@@ -101,7 +105,7 @@ class fund_sql(object):
          :param fund_id: 基金ID
          :return: 交易次数
          """
-        sql = """select count(*) from sum_journal where fund_id='{}';""".format(str(fund_id))
+        sql = """select count(*) from sum_journal_test where fund_id='{}';""".format(str(fund_id))
         self.cursor.execute(sql)
         operate_num = self.cursor.fetchall()[0][0]
         return operate_num
@@ -111,7 +115,7 @@ class fund_sql(object):
         :param fund_id:  基金ID
         :return: 最后一次加仓的涨幅情况
         """
-        sql = """select profit_loss from sum_journal where fund_id="{}" and cr_change!=0 and id=(select max(id) from sum_journal where fund_id="{}" and cr_change!=0 );""".format(
+        sql = """select profit_loss from sum_journal_test where fund_id="{}" and cr_change!=0 and id=(select max(id) from sum_journal_test where fund_id="{}" and cr_change!=0 );""".format(
             fund_id, fund_id)
         self.cursor.execute(sql)
         last_profit_loss = decimal.Decimal(str(self.cursor.fetchall()[0][0]))
@@ -136,14 +140,20 @@ class fund_sql(object):
             money_list.append([date, int(money)])
         return profit_loss_list, money_list
 
+    def simulate_log(self, fund_id, simulate_name, date_type):
+        add_sql = """INSERT INTO simulate_log(fund_id,profit_loss,strategy,date_type,top_money) VALUES("{}","{}","{}","{}","{}");""".format(
+            fund_id, self.sum_wave, simulate_name, date_type, self.top_money)
+        self.cursor.execute(add_sql)
+        self.db.commit()
+
     def clear(self):  # 数据库初始化
-        update_sql = """update fund_inf set hold=0 where id=2;"""
+        update_sql = """update fund_inf_test set hold=0 where id=1;"""
         self.cursor.execute(update_sql)
         self.db.commit()
-        delete_sum_sql = """delete  from sum_journal;"""
+        delete_sum_sql = """delete  from sum_journal_test;"""
         self.cursor.execute(delete_sum_sql)
         self.db.commit()
-        delete_week_sql = """delete  from week_journal;"""
+        delete_week_sql = """delete  from week_journal_test;"""
         self.cursor.execute(delete_week_sql)
         self.db.commit()
         self.cursor.close()
