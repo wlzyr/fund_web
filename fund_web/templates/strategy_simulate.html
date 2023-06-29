@@ -62,6 +62,12 @@
 </div>
 <script type="text/javascript">
     function start() {
+        document.getElementById("profit_loss").remove();
+        document.getElementById("money").remove();
+        var profit_loss = '<div id="profit_loss" style="height: 40%"></div>'
+        var money = '<div id="money" style="height: 40%;"></div>'
+        $('#content').append(profit_loss)
+        $('#content').append(money)
         var dom = document.getElementById('profit_loss');
         var myChart = echarts.init(dom, null, {
           renderer: 'canvas',
