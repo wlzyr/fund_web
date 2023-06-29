@@ -42,7 +42,8 @@
     <form method="post">
         {% csrf_token %}
         基金ID：<input type="text" class="input-box" placeholder="请输入基金..." name="fund_id">
-        金额：<input type="text" class="input-box" value="10000" name="sum_money" readonly="readonly" style="background-color: #d9d9d9">
+        金额：<input type="text" class="input-box" value="10000" name="sum_money" readonly="readonly"
+                    style="background-color: #d9d9d9">
         时间：<select name="date" class="select-box">
         <option value="1">1个月</option>
         <option value="2">6个月</option>
@@ -50,14 +51,75 @@
     </select>
         策略：<select name="strategy" class="select-box">
         {% for strategy in strategy_list %}
-           <option value="{{ strategy }}">{{ strategy }}</option>
+        <option value="{{ strategy }}">{{ strategy }}</option>
         {% endfor %}
     </select>
-        <button class="btn btn-primary" style="margin-left: 10px; height: 45px; margin-top: -1%;" type="submit">
+        <button class="btn btn-primary" style="margin-left: 10px; height: 45px; margin-top: -1%;" type="submit"
+                onclick="start()">
             开始模拟
         </button>
     </form>
 </div>
+<script type="text/javascript">
+    function start() {
+        var dom = document.getElementById('profit_loss');
+        var myChart = echarts.init(dom, null, {
+          renderer: 'canvas',
+          useDirtyRect: false
+        });
+        var app = {};
+
+        var option;
+
+        option = {
+          graphic: {
+            elements: [
+              {
+                type: 'group',
+                left: 'center',
+                top: 'center',
+                children: new Array(7).fill(0).map((val, i) => ({
+                  type: 'rect',
+                  x: i * 20,
+                  shape: {
+                    x: 0,
+                    y: -40,
+                    width: 10,
+                    height: 80
+                  },
+                  style: {
+                    fill: '#5470c6'
+                  },
+                  keyframeAnimation: {
+                    duration: 1000,
+                    delay: i * 200,
+                    loop: true,
+                    keyframes: [
+                      {
+                        percent: 0.5,
+                        scaleY: 0.3,
+                        easing: 'cubicIn'
+                      },
+                      {
+                        percent: 1,
+                        scaleY: 1,
+                        easing: 'cubicOut'
+                      }
+                    ]
+                  }
+                }))
+              }
+            ]
+          }
+        };
+
+        if (option && typeof option === 'object') {
+          myChart.setOption(option);
+        }
+
+        window.addEventListener('resize', myChart.resize);
+    }
+</script>
 <div id="profit_loss" style="height: 40%"></div>
 <div id="money" style="height: 40%;"></div>
 {% if is_post == 1 %}
