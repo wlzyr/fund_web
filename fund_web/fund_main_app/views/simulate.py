@@ -112,7 +112,7 @@ class StrategyImport(View):
 class SimulateLog(View, FundDb):
     def get(self, request):
         user = request.COOKIES.get("user")
-        sql = """select * from simulate_log;"""
+        sql = """select * from simulate_log order by id desc;"""
         db, cursor = self.db()
         cursor.execute(sql)
         logs = cursor.fetchall()

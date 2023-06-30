@@ -36,8 +36,8 @@ urlpatterns = [
     path('fund/float/set/', FundFloatSet.as_view(), name="FundFloatSet"),  # 基金涨幅设置
 
     path('simulate/', StrategySimulate.as_view(), name="StrategySimulate"),  # 策略模拟
-    path('import/', StrategyImport.as_view(), name="StrategyImport"),  # 策略模拟
-    path('simulate/log/', SimulateLog.as_view(), name="SimulateLog"),  # 策略模拟
+    path('import/', StrategyImport.as_view(), name="StrategyImport"),  # 模拟记录
+    path('simulate/log/', SimulateLog.as_view(), name="SimulateLog"),  # 策略导入
 
     path('error/', Error.as_view(), name="Error"),  # 错误页面
 ]
