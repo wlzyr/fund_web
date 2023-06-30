@@ -76,6 +76,7 @@ class SumData(View, FundDb):  # 总数据
         pag = int(pag)
         if pag >= 1: pag = pag - 1
         sum_journal, sum_page, sum_num = self._select_data(pag)
+        print(sum_num)
         user = request.COOKIES.get("user")
         return render(request, "data_list.html", {
             "journal": sum_journal,

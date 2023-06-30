@@ -7,6 +7,7 @@ import importlib
 from django.views import View
 
 from fund_web.settings import DB_IPADDRESS, DB_PASSWORD
+from fund_main_app.views import data as data
 
 
 class FundDb(object):  # 数据库object
@@ -111,6 +112,9 @@ class StrategyImport(View):
 
 class SimulateLog(View, FundDb):
     def get(self, request):
+        pag = request.GET.get("pag", 0)
+        pag = int(pag)
+        if pag >= 1: pag = pag - 1
         user = request.COOKIES.get("user")
         sql = """select * from simulate_log order by id desc;"""
         db, cursor = self.db()
@@ -120,8 +124,18 @@ class SimulateLog(View, FundDb):
             if log["date_type"] == 1: log["date_type"] = "1个月"
             if log["date_type"] == 2: log["date_type"] = "6个月"
             if log["date_type"] == 3: log["date_type"] = "12个月"
+        logs_obj = data.Paginator(logs, 10)
+        logs = logs_obj.get_page(pag)
+        sum_page = logs_obj.get_sum_page()
+        sum_num = logs_obj.get_sum_num()
         return render(request, "simulate_log.html", {
             "user": user,
             "table_name": "simulate_log",
-            "logs": logs
+            "logs": logs,
+            "sum_page": sum_page,
+            "last_page": pag if pag > 1 else 1,
+            "next_page": pag + 2 if pag + 2 < 10 else 10,
+            "sum_num": sum_num,
+            "start_page": pag * 10,
+            "end_page": len(logs) + pag * 10 - 1,
         })

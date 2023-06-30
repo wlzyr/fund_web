@@ -34,6 +34,33 @@
             </tbody>
         </table>
     </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-5">
+            <div class="dataTables_info" id="dataTable_info" role="status" aria-live="polite">Showing {{start_page}} to
+                {{end_page}} of {{sum_num}} entries
+            </div>
+        </div>
+        <div class="col-sm-12 col-md-7">
+            <div class="dataTables_paginate paging_simple_numbers" id="dataTable_paginate">
+                <ul class="pagination">
+                    <li class="paginate_button page-item next" id="dataTable_previous"><a href="?pag={{last_page}}"
+                                                                                          aria-controls="dataTable"
+                                                                                          tabindex="0"
+                                                                                          class="page-link">Previous</a>
+                    </li>
+                    {% for i in sum_page %}
+                    <li class="paginate_button page-item "><a href="?pag={{i}}" aria-controls="dataTable" tabindex="0"
+                                                              class="page-link">{{i}}</a></li>
+                    {% endfor %}
+                    <li class="paginate_button page-item next" id="dataTable_next"><a href="?pag={{next_page}}"
+                                                                                      aria-controls="dataTable"
+                                                                                      tabindex="0"
+                                                                                      class="page-link">Next</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
 </div>
 <script>
     $('.btn-delete').click(function () {
