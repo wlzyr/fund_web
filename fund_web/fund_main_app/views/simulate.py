@@ -1,3 +1,4 @@
+import json
 import re
 
 import pymysql
@@ -42,16 +43,11 @@ class fund_date(object):  # 策略模拟数据
             }
             html = requests.get(url=url, headers=he)
             html.encoding = html.apparent_encoding
-            gains = re.findall(r'L":"-*[0-9]+.[0-9]+"', html.text)
-            gains = re.findall(r'-*[0-9]+.[0-9]+', str(gains))
-            price = re.findall(r'"DWJZ":"[0-9]+.[0-9]+"', html.text)
-            price = re.findall(r'[0-9]+.[0-9]+', str(price))
-            date = re.findall(r'[0-9]+-[0-9]+-[0-9]+', html.text)
-            gains = gains[::-1]
-            price = price[::-1]
-            date = date[::-1]
-            for x, y, z in zip(date, price, gains):
-                fund_dict[x] = (list((y, z)))
+            fund_data = re.findall(r'\[.*\]', html.text)[0]
+            fund_data = json.loads(fund_data)
+            for day_info in fund_data[::-1]:
+                if not day_info["DWJZ"] or not day_info["JZZZL"]: continue
+                fund_dict[day_info["FSRQ"]] = [day_info["DWJZ"], day_info["JZZZL"]]
         return fund_dict  # {时间:[净值,涨幅]}
 
 
@@ -85,16 +81,21 @@ class StrategySimulate(View):  # 策略模拟
         strategy = request.POST.get("strategy")
         strategy_list_obj = StrategyData()
         strategy_list = strategy_list_obj.data()
-
-        try:
-            fund_obj = fund_date(fund_id, date_type)
-            date = fund_obj.date()
-            if not date: return redirect("Error")
-            strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
-            strategy_obj = strategy()
-            profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
-        except:
-            return redirect("Error")
+        fund_obj = fund_date(fund_id, date_type)
+        date = fund_obj.date()
+        if not date: return redirect("Error")
+        strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
+        strategy_obj = strategy()
+        profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
+        # try:
+        #     fund_obj = fund_date(fund_id, date_type)
+        #     date = fund_obj.date()
+        #     if not date: return redirect("Error")
+        #     strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
+        #     strategy_obj = strategy()
+        #     profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
+        # except:
+        #     return redirect("Error")
         return render(request, "strategy_simulate.html", {
             "user": user,
             "profit_loss_list": profit_loss_list,

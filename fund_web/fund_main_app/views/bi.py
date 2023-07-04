@@ -28,6 +28,7 @@ def _linedata(fund_id):  # 7天业绩走势
         fund_data = re.findall(r'\[.*\]', html.text)[0]
         fund_data = json.loads(fund_data)[0:7]
         for day_info in fund_data[::-1]:
+            if not day_info["JZZZL"]: day_info["JZZZL"] = 0
             fund_dict[day_info["FSRQ"]] = [day_info["DWJZ"], day_info["JZZZL"]]
     return fund_dict  # {时间:[净值,涨幅]}
 
