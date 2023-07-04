@@ -25,16 +25,10 @@ def _linedata(fund_id):  # 7天业绩走势
         }
         html = requests.get(url=url, headers=he)
         html.encoding = html.apparent_encoding
-        gains = re.findall(r'L":"-*[0-9]+.[0-9]+"', html.text)
-        gains = re.findall(r'-*[0-9]+.[0-9]+', str(gains))
-        price = re.findall(r'"DWJZ":"[0-9]+.[0-9]+"', html.text)
-        price = re.findall(r'[0-9]+.[0-9]+', str(price))
-        date = re.findall(r'[0-9]+-[0-9]+-[0-9]+', html.text)
-        gains = gains[::-1]
-        price = price[::-1]
-        date = date[::-1]
-        for x, y, z in zip(date, price, gains):
-            fund_dict[x] = (list((y, z)))
+        fund_data = re.findall(r'\[.*\]', html.text)[0]
+        fund_data = json.loads(fund_data)[0:7]
+        for day_info in fund_data[::-1]:
+            fund_dict[day_info["FSRQ"]] = [day_info["DWJZ"], day_info["JZZZL"]]
     return fund_dict  # {时间:[净值,涨幅]}
 
 
@@ -152,8 +146,7 @@ class Home(View, FundDb):  # 数据大屏
                     cursor.execute(sql)
                     db.commit()
                     linedata = _linedata(id)
-                    keylist = list(linedata.keys())
-                    for i in keylist[len(keylist):len(keylist) - 8:-1]:
+                    for i in linedata.keys():
                         sql = "INSERT INTO day_{}(date,value)VALUES ('{}','{}')".format(id, i, linedata[i][1])
                         cursor.execute(sql)
                         db.commit()
@@ -171,10 +164,6 @@ class Home(View, FundDb):  # 数据大屏
             value004746.append(y["value"])
             value013291.append(z["value"])
             value013048.append(r["value"])
-        date7, value008888, value004746, value013291, value013048 = date7[::-1], value008888[::-1], value004746[
-                                                                                                    ::-1], value013291[
-                                                                                                           ::-1], value013048[
-                                                                                                                  ::-1]
         return date7, value008888, value004746, value013291, value013048
 
     def _fund_floating(self):  # 基金涨幅
