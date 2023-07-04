@@ -141,6 +141,11 @@ class fund_sql(object):
         return profit_loss_list, money_list
 
     def simulate_log(self, fund_id, simulate_name, date_type):
+        """
+        :param fund_id: 基金ID
+        :param simulate_name: 策略名称
+        :param date_type: 时间类型 1 1个月 2 6个月 3 12个月
+        """
         add_sql = """INSERT INTO simulate_log(fund_id,profit_loss,strategy,date_type,top_money) VALUES("{}","{}","{}","{}","{}");""".format(
             fund_id, self.sum_wave, simulate_name, date_type, self.top_money)
         self.cursor.execute(add_sql)
