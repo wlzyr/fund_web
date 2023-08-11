@@ -3,12 +3,12 @@ import time
 
 import pymysql
 import decimal
-from fund_web.settings import DB_IPADDRESS, DB_PASSWORD
+from fund_web.settings import DB_IPADDRESS, DB_PASSWORD, PORT
 
 
 class fund_sql(object):
     def __init__(self):
-        self.db = pymysql.connect(host=DB_IPADDRESS, user="root", password=DB_PASSWORD, database="fund")
+        self.db = pymysql.connect(host=DB_IPADDRESS, user="root", password=DB_PASSWORD, database="fund", port=PORT)
         self.cursor = self.db.cursor()
         self.sum_money = decimal.Decimal('0')
         self.sum_wave = decimal.Decimal('0')

@@ -6,14 +6,14 @@ from django.views import View
 from django.http import JsonResponse
 import datetime
 
-from fund_web.settings import DB_PASSWORD, DB_IPADDRESS
+from fund_web.settings import DB_PASSWORD, DB_IPADDRESS, PORT
 
 
 class FundDb(object):  # 数据库object
     @staticmethod
     def db():
         db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
-                             cursorclass=pymysql.cursors.DictCursor)
+                             cursorclass=pymysql.cursors.DictCursor, port=PORT)
         cursor = db.cursor()
         return db, cursor
 

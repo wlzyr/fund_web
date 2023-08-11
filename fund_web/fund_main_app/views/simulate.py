@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect
 import importlib
 from django.views import View
 
-from fund_web.settings import DB_IPADDRESS, DB_PASSWORD
+from fund_web.settings import DB_IPADDRESS, DB_PASSWORD, PORT
 from fund_main_app.views import data as data
 
 
@@ -15,7 +15,7 @@ class FundDb(object):  # 数据库object
     @staticmethod
     def db():
         db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
-                             cursorclass=pymysql.cursors.DictCursor)
+                             cursorclass=pymysql.cursors.DictCursor, port=PORT)
         cursor = db.cursor()
         return db, cursor
 
