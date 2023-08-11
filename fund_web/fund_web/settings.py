@@ -72,18 +72,21 @@ WSGI_APPLICATION = 'fund_web.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
+DB_IPADDRESS = ""
+DB_PASSWORD = ""
+PORT = 3306
+NAME = ""
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fund',
-        'HOST': '127.0.0.1',
-        'PORT': 3306,
+        'NAME': NAME,
+        'HOST': DB_IPADDRESS,
+        'PORT': PORT,
         'USER': 'root',
-        'PASSWORD': '123456',
+        'PASSWORD': DB_PASSWORD,
     }
 }
-
+ALLOWED_HOSTS = ['*']
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
