@@ -62,12 +62,13 @@ class fund_sql(object):
         self.db.commit()
         self.sum_money_list.append(self.sum_money)
 
-    def av_mount(self, date):  # >=7天的数据处理
+    def av_mount(self, date, day):  # >=(7/30)天的数据处理
         """
         :param date: 时间
+        :param day: 天数（7天30天..）
         """
-        select_sql = """select * from week_journal_test where DATE_SUB("{}", INTERVAL 7 DAY) >= date(cr_date);""".format(
-            date)
+        select_sql = """select * from week_journal_test where DATE_SUB("{}", INTERVAL {} DAY) >= date(cr_date);""".format(
+            date, day)
         self.cursor.execute(select_sql)
         data = self.cursor.fetchall()
         for ii in data:
@@ -97,7 +98,11 @@ class fund_sql(object):
         """
         wave = decimal.Decimal(str(wave))
         self.profit_loss += wave
-        self.sum_wave = round(wave * self.sum_money * decimal.Decimal("0.01") + self.sum_wave, 4)
+        print("涨幅：", wave, "持仓：", self.sum_money)
+        self.sum_wave += round(wave * self.sum_money * decimal.Decimal("0.01"), 4)
+        self.sum_money += round(wave * self.sum_money * decimal.Decimal("0.01"), 4)
+        print("今天过后持仓：", self.sum_wave)
+        print("-----------")
         self.sum_wave_list.append(self.sum_wave)
 
     def sum_operate(self, fund_id):  # 交易次数
@@ -136,8 +141,8 @@ class fund_sql(object):
         money_list = []  # 使用金额
         for date, profit_loss, money in zip(date_list, self.sum_wave_list, self.sum_money_list):
             date = int(time.mktime(time.strptime(date, "%Y-%m-%d"))) * 1000
-            profit_loss_list.append([date, int(profit_loss)])
-            money_list.append([date, int(money)])
+            profit_loss_list.append([date, float(profit_loss)])
+            money_list.append([date, float(money)])
         return profit_loss_list, money_list
 
     def simulate_log(self, fund_id, simulate_name, date_type):
