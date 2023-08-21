@@ -98,11 +98,8 @@ class fund_sql(object):
         """
         wave = decimal.Decimal(str(wave))
         self.profit_loss += wave
-        print("涨幅：", wave, "持仓：", self.sum_money)
         self.sum_wave += round(wave * self.sum_money * decimal.Decimal("0.01"), 4)
         self.sum_money += round(wave * self.sum_money * decimal.Decimal("0.01"), 4)
-        print("今天过后持仓：", self.sum_wave)
-        print("-----------")
         self.sum_wave_list.append(self.sum_wave)
 
     def sum_operate(self, fund_id):  # 交易次数
