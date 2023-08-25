@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from datetime import datetime
+
 from django.shortcuts import render
 import pymysql
 import json
@@ -81,15 +83,32 @@ class FundDb(object):  # 数据库object
 
 
 class Home(View, FundDb):  # 数据大屏
+
+    def _fund_id_list(self):  # 获取基金id
+        db, cursor = self.db()
+        sql = "SELECT fund_id,name FROM fund_inf;"
+        cursor.execute(sql)
+        fund_list = cursor.fetchall()
+        id_list = [fund_id["fund_id"] for fund_id in fund_list]
+        name_list = [fund_name["name"].replace("\t", "") for fund_name in fund_list]
+        return id_list, name_list
+
     def _config(self):
         db, cursor = self.db()
         sql = "select config  from config_table"
         cursor.execute(sql)
         config = cursor.fetchall()
         config = json.loads(config[0]["config"])
-        m, date, money = config['m'], config["date"][0] + ':' + config["date"][1], str(int(config["money"]) * 4)
+        date = config["date"][0] + ':' + config["date"][1]
         now_money = 0
-        id_list = ["004746", "013291", "008888", "013048"]
+        money = 0
+        sql = "SELECT fund_id,reserve_money,rate FROM fund_inf"
+        cursor.execute(sql)
+        fund_id_list = cursor.fetchall()
+        id_list = [fund_id["fund_id"] for fund_id in fund_id_list]
+        m = fund_id_list[0]["rate"]
+        for fund in fund_id_list:
+            money += fund["reserve_money"]
         for i in id_list:
             sql_hold = "select hold from fund_inf where fund_id={} and ch_name='z_record'".format(i)
             cursor.execute(sql_hold)
@@ -116,7 +135,7 @@ class Home(View, FundDb):  # 数据大屏
 
     def _pie_chart(self):
         db, cursor = self.db()
-        id_list = ["004746", "013291", "008888", "013048"]
+        id_list, _ = self._fund_id_list()
         hold_num = []
         for i in id_list:
             sql_hold = "select hold from fund_inf where fund_id={} and ch_name='z_record'".format(i)
@@ -135,7 +154,7 @@ class Home(View, FundDb):  # 数据大屏
 
     def _line_chart(self, cookie_date):
         db, cursor = self.db()
-        id_list = ["004746", "013291", "008888", "013048"]
+        id_list, _ = self._fund_id_list()
         daydict = {}
         for id in id_list:
             t = time.strftime("%Y-%m-%d")
@@ -143,17 +162,18 @@ class Home(View, FundDb):  # 数据大屏
             if not cookie_date or cookie_date != str(new_date):
                 print(id, "更新")
                 try:
-                    sql = "DELETE FROM day_{}".format(id)
+                    sql = "DELETE FROM seven_days_profit_loss WHERE fund_id={};".format(id)
                     cursor.execute(sql)
                     db.commit()
                     linedata = _linedata(id)
                     for i in linedata.keys():
-                        sql = "INSERT INTO day_{}(date,value)VALUES ('{}','{}')".format(id, i, linedata[i][1])
+                        sql = "INSERT INTO seven_days_profit_loss(fund_id,date,profit_loss)VALUES ('{}','{}','{}')".format(
+                            id, i, linedata[i][1])
                         cursor.execute(sql)
                         db.commit()
                 except:
                     db.rollback()
-            sql = "select date,value from day_{}".format(id)
+            sql = "select date,profit_loss from seven_days_profit_loss where fund_id={}".format(id)
             cursor.execute(sql)
             daydata = cursor.fetchall()
             daydict[id] = daydata
@@ -161,10 +181,10 @@ class Home(View, FundDb):  # 数据大屏
         date7, value008888, value004746, value013291, value013048 = [], [], [], [], []
         for x, y, z, r in zip(daydict["008888"], daydict["004746"], daydict["013291"], daydict["013048"]):
             date7.append(x["date"])
-            value008888.append(x["value"])
-            value004746.append(y["value"])
-            value013291.append(z["value"])
-            value013048.append(r["value"])
+            value008888.append(x["profit_loss"])
+            value004746.append(y["profit_loss"])
+            value013291.append(z["profit_loss"])
+            value013048.append(r["profit_loss"])
         return date7, value008888, value004746, value013291, value013048
 
     def _fund_floating(self):  # 基金涨幅
@@ -194,6 +214,22 @@ class Home(View, FundDb):  # 数据大屏
             ret[fund] = fund_data
         return ret
 
+    def _inform(self):  # 信息通知
+        db, cursor = self.db()
+        fund_id_list, fun_name_list = self._fund_id_list()
+        res = {}
+        for fund_id, fund_name in zip(fund_id_list, fun_name_list):
+            sql = "SELECT profit_loss,date FROM seven_days_profit_loss WHERE fund_id={} ORDER BY id DESC LIMIT 1;".format(
+                fund_id)
+            cursor.execute(sql)
+            profit_loss = cursor.fetchall()
+            date = datetime.strftime(profit_loss[0]["date"], '%Y-%m-%d %H:%M:%S')
+            res[fund_id] = {"name": fund_name,
+                            "profit_loss": profit_loss[0]["profit_loss"],
+                            "date": date}
+        print(res)
+        return res
+
     def get(self, request):
         user = request.COOKIES.get("user")
         cookie_date = request.COOKIES.get("new_date")
@@ -202,6 +238,7 @@ class Home(View, FundDb):  # 数据大屏
         date7, value008888, value004746, value013291, value013048 = self._line_chart(cookie_date)
         textvalue = _get_textvalue()
         fund_floatings = self._fund_floating()
+        inform_dict = self._inform()
         ret = render(request, "index.html",
                      {"user": user,
                       'm': m, "date": date, "money": money, "now_money": now_money,
@@ -210,6 +247,7 @@ class Home(View, FundDb):  # 数据大屏
                       "value004746": value004746, "value008888": value008888,
                       "textvalue": textvalue,
                       "fund_floatings": fund_floatings,
+                      "inform_dict": inform_dict,
                       })
         ret.set_cookie("m", m), ret.set_cookie("date", date), ret.set_cookie("money", money), ret.set_cookie(
             "now_money", now_money)

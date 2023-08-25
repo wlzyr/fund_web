@@ -23,6 +23,7 @@
         font-weight: bolder;
         line-height: 24px;
     }
+
 </style>
 <div align="center">
     <table border="1" width="47%" height="250" style="border-width: 0px">
@@ -36,13 +37,25 @@
                             <h2>配置信息</h2>
                             <span class="required_notification">* 表示必填项</span>
                         </li>
+                        {% for fund in fund_list %}
                         <li>
-                            <label for="name">倍率:</label>
-                            <input type="text" name="m" value="{{ m }}" required/>
+                            <span class="required_notification" style="font-size: 14px">{{ fund.name }}({{ fund.fund_id }})</span>
                         </li>
                         <li>
                             <label for="email">预定金额:</label>
-                            <input type="text" name="money" value="{{ money }}" required/>
+                            <input type="text" name="money_{{ fund.fund_id }}" value="{{ fund.reserve_money }}" required/>
+                        </li>
+                        <li>
+                            <label for="email">天数:</label>
+                            <input type="text" name="day_{{ fund.fund_id }}" value="{{ fund.day }}" required/>
+                        </li>
+                        {% endfor %}
+                        <li>
+                            <span class="required_notification" style="font-size: 14px">统一配置</span>
+                        </li>
+                        <li>
+                            <label for="name">倍率:</label>
+                            <input type="text" name="m" value="{{ fund_list.0.rate }}" required/>
                         </li>
                         <li>
                             <label for="website">时间:</label>

@@ -20,8 +20,14 @@ class FundDb(object):  # 数据库object
 
 
 class Config(View, FundDb):  # 基金概括设置
-    def _up_config(self, m, date, money):
+    def _up_config(self, m, date, rate_reserve_money):
         db, cursor = self.db()
+        for fund_inf in rate_reserve_money.keys():
+            sql = "update fund_inf set reserve_money={},rate={},day={} where fund_id={}".format(
+                rate_reserve_money[fund_inf]["reserve_money"],
+                m, rate_reserve_money[fund_inf]["day"], fund_inf)
+            cursor.execute(sql)
+            db.commit()
         sql = "select config from config_table"
         cursor.execute(sql)
         config = cursor.fetchall()
@@ -29,7 +35,7 @@ class Config(View, FundDb):  # 基金概括设置
         is_restart = True
         # 修订config数据处
         if config["date"] == date: is_restart = False
-        config["m"], config["date"], config["money"] = m, date, money
+        config["date"] = date
         config = json.dumps(config)
         sql = "update config_table set config='{}' where id=1".format(config)
         cursor.execute(sql)
@@ -38,27 +44,39 @@ class Config(View, FundDb):  # 基金概括设置
         if is_restart: fund_main_app.web_socket.main("reboot")
 
     def get(self, request):
-        m, date, money, now_money = request.COOKIES.get('m'), request.COOKIES.get('date'), request.COOKIES.get(
-            'money'), request.COOKIES.get('now_money')
+        now_money = request.COOKIES.get('now_money')
         user = request.COOKIES.get("user")
+        sql = "SELECT fund_id,reserve_money,rate,day,name FROM fund_inf;"
+        db, cursor = self.db()
+        cursor.execute(sql)
+        fund_list = cursor.fetchall()
+        sql = "SELECT config FROM config_table"
+        cursor.execute(sql)
+        config = json.loads(cursor.fetchall()[0]["config"])
+        date = config["date"][0] + ':' + config["date"][1]
         new = datetime.datetime.now().date()
         is_week_end = datetime.datetime.today().weekday()
         if not is_workday(new) or (
                 time.localtime().tm_hour >= 22 or time.localtime().tm_hour <= 13) or is_week_end >= 5 or (
                 time.localtime().tm_hour == 14 and time.localtime().tm_min < 50):
-            if not m:
-                m, date, money, now_money = "5", "14:55", "4000", "****"
             return render(request, "config.html", {
-                "m": m, "date": date, "money": money, "now_money": now_money,
-                "user": user,
+                "date": date, "fund_list": fund_list, "user": user, "now_money": now_money
             })
         else:
             return redirect("Error")
 
     def post(self, request):
-        m, date, money = request.POST.get("m"), request.POST.get("date"), int(request.POST.get("money")) // 4
+        m, date = request.POST.get("m"), request.POST.get("date")
         date = date.split(":")
-        self._up_config(m, date, money)
+        money_008888, day_008888 = request.POST.get("money_008888"), request.POST.get("day_008888")
+        money_004746, day_004746 = request.POST.get("money_004746"), request.POST.get("day_004746")
+        money_013291, day_013291 = request.POST.get("money_013291"), request.POST.get("day_013291")
+        money_013048, day_013048 = request.POST.get("money_013048"), request.POST.get("day_013048")
+        self._up_config(m, date,
+                        {"008888": {"reserve_money": money_008888, "day": day_008888},
+                         "004746": {"reserve_money": money_004746, "day": day_004746},
+                         "013291": {"reserve_money": money_013291, "day": day_013291},
+                         "013048": {"reserve_money": money_013048, "day": day_013048}})
         return redirect("Bi")
 
 
