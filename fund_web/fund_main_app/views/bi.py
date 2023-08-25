@@ -223,11 +223,10 @@ class Home(View, FundDb):  # 数据大屏
                 fund_id)
             cursor.execute(sql)
             profit_loss = cursor.fetchall()
-            date = datetime.strftime(profit_loss[0]["date"], '%Y-%m-%d %H:%M:%S')
+            date = datetime.strftime(profit_loss[0]["date"], '%Y-%m-%d')
             res[fund_id] = {"name": fund_name,
                             "profit_loss": profit_loss[0]["profit_loss"],
                             "date": date}
-        print(res)
         return res
 
     def get(self, request):

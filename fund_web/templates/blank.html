@@ -166,6 +166,7 @@
                         setTimeout(window.open("https://fund.eastmoney.com/" + fund + ".html"), 500);
                     })
 
+
                 </script>
 
                 <!-- Topbar Navbar -->
@@ -203,25 +204,28 @@
                            href="#" id="alertsDropdown" role="button">
                             <i class="fas fa-bell fa-fw"></i>
                             <!-- Counter - Alerts -->
-                            <span class="badge badge-danger badge-counter">3+</span>
+                            <span class="badge badge-danger badge-counter">{{ inform_dict|length }}+</span>
                         </a>
                         <!-- Dropdown - Alerts -->
                         <div aria-labelledby="alertsDropdown"
                              class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in">
                             <h6 class="dropdown-header">
-                                Alerts Center
+                                昨日盈亏情况
                             </h6>
-                            <a class="dropdown-item d-flex align-items-center" href="#">
+                            {% for inform in inform_dict.values %}
+                                <a class="dropdown-item d-flex align-items-center" href="#">
                                 <div class="mr-3">
                                     <div class="icon-circle bg-success">
                                         <i class="fas fa-donate text-white"></i>
                                     </div>
                                 </div>
                                 <div>
-                                    <div class="small text-gray-500">December 7, 2019</div>
-                                    $290.29 has been deposited into your account!
+                                    <div class="small text-gray-500">日期：{{ inform.date }}</div>
+                                    {{ inform.name }}<br>
+                                    浮动盈亏：{{ inform.profit_loss }}
                                 </div>
                             </a>
+                            {% endfor %}
                         </div>
                     </li>
 
