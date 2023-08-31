@@ -8,6 +8,7 @@ import fund_main_app.web_socket
 from chinese_calendar import is_workday
 import datetime
 from fund_web.settings import DB_PASSWORD, DB_IPADDRESS, PORT
+from views.bi import Inform
 
 
 class FundDb(object):  # 数据库object
@@ -56,11 +57,15 @@ class Config(View, FundDb):  # 基金概括设置
         date = config["date"][0] + ':' + config["date"][1]
         new = datetime.datetime.now().date()
         is_week_end = datetime.datetime.today().weekday()
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         if not is_workday(new) or (
                 time.localtime().tm_hour >= 22 or time.localtime().tm_hour <= 13) or is_week_end >= 5 or (
                 time.localtime().tm_hour == 14 and time.localtime().tm_min < 50):
             return render(request, "config.html", {
-                "date": date, "fund_list": fund_list, "user": user, "now_money": now_money
+                "date": date, "fund_list": fund_list,
+                "user": user, "now_money": now_money,
+                "inform_dict": inform_dict,
             })
         else:
             return redirect("Error")
@@ -97,11 +102,14 @@ class FundFloatSet(View, FundDb):  # 基金涨幅设置
         cursor.execute(sql)
         fund_list = cursor.fetchall()
         db.close()
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         for fund in fund_list:
             fund_name = requests.get(url=r'http://fundgz.1234567.com.cn/js/' + fund["fund_id"] + '.js',
                                      headers=self.tt_he)
             fund["name"] = json.loads(fund_name.text[8:-2])["name"]
-        return render(request, "fund_float_set.html", {"user": user, "fund_list": fund_list})
+        return render(request, "fund_float_set.html", {"user": user, "fund_list": fund_list,
+                                                       "inform_dict": inform_dict, })
 
     def post(self, request):
         fund_id = request.POST.get("fund_id")

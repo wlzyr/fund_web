@@ -9,6 +9,7 @@ from django.views import View
 
 from fund_web.settings import DB_IPADDRESS, DB_PASSWORD, PORT
 from fund_main_app.views import data as data
+from views.bi import Inform
 
 
 class FundDb(object):  # 数据库object
@@ -68,10 +69,13 @@ class StrategySimulate(View):  # 策略模拟
         user = request.COOKIES.get("user")
         strategy_list_obj = StrategyData()
         strategy_list = strategy_list_obj.data()
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         return render(request, "strategy_simulate.html", {
             "user": user,
             "is_post": 0,
-            "strategy_list": strategy_list
+            "strategy_list": strategy_list,
+            "inform_dict": inform_dict,
         })
 
     def post(self, request):
@@ -105,10 +109,6 @@ class StrategySimulate(View):  # 策略模拟
         })
 
 
-class StrategyImport(View):
-    def get(self, request):
-        user = request.COOKIES.get("user")
-        return render(request, "strategy_import.html", {"user": user})
 
 
 class SimulateLog(View, FundDb):
@@ -129,6 +129,8 @@ class SimulateLog(View, FundDb):
         logs = logs_obj.get_page(pag)
         sum_page = logs_obj.get_sum_page()
         sum_num = logs_obj.get_sum_num()
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         return render(request, "simulate_log.html", {
             "user": user,
             "table_name": "simulate_log",
@@ -139,4 +141,5 @@ class SimulateLog(View, FundDb):
             "sum_num": sum_num,
             "start_page": pag * 10,
             "end_page": len(logs) + pag * 10 - 1,
+            "inform_dict": inform_dict,
         })

@@ -19,7 +19,7 @@ from views.authentication import Login
 from views.bi import Home, Error
 from views.data import FundInf, Delete, Update, SumData, WeekData
 from views.fund_date_set import FundFloatSet, Config
-from views.simulate import StrategySimulate, StrategyImport, SimulateLog
+from views.simulate import StrategySimulate, SimulateLog
 
 urlpatterns = [
     path("", Login.as_view(), name="login"),  # 登录

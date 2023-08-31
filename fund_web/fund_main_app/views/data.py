@@ -7,6 +7,7 @@ from django.http import JsonResponse
 import datetime
 
 from fund_web.settings import DB_PASSWORD, DB_IPADDRESS, PORT
+from views.bi import Inform
 
 
 class FundDb(object):  # 数据库object
@@ -38,6 +39,7 @@ class Paginator(object):  # 分页
 
 
 class WeekData(View, FundDb):  # 周数据
+
     def _select_data(self):
         db, cursor = self.db()
         sql = "select * from week_journal"
@@ -50,10 +52,11 @@ class WeekData(View, FundDb):  # 周数据
     def get(self, request):
         week_journal = self._select_data()
         user = request.COOKIES.get("user")
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         return render(request, "data_list.html", {
-            "journal": week_journal,
-            "user": user,
-            "table_name": "week_journal",
+            "journal": week_journal, "user": user,
+            "table_name": "week_journal", "inform_dict": inform_dict,
         })
 
 
@@ -77,6 +80,8 @@ class SumData(View, FundDb):  # 总数据
         if pag >= 1: pag = pag - 1
         sum_journal, sum_page, sum_num = self._select_data(pag)
         user = request.COOKIES.get("user")
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         return render(request, "data_list.html", {
             "journal": sum_journal,
             "user": user,
@@ -87,6 +92,7 @@ class SumData(View, FundDb):  # 总数据
             "sum_num": sum_num,
             "start_page": pag * 10,
             "end_page": len(sum_journal) + pag * 10 - 1,
+            "inform_dict": inform_dict,
         })
 
 
@@ -111,9 +117,12 @@ class FundInf(View, FundDb):  # 个基金数据
     def get(self, request):
         inf_data = self._inf()
         user = request.COOKIES.get("user")
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         return render(request, "fund_inf.html", {
             "inf_data": inf_data,
             "user": user,
+            "inform_dict": inform_dict,
         })
 
 

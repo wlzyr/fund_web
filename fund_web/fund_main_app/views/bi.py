@@ -81,9 +81,6 @@ class FundDb(object):  # 数据库object
         cursor = db.cursor()
         return db, cursor
 
-
-class Home(View, FundDb):  # 数据大屏
-
     def _fund_id_list(self):  # 获取基金id
         db, cursor = self.db()
         sql = "SELECT fund_id,name FROM fund_inf;"
@@ -92,6 +89,26 @@ class Home(View, FundDb):  # 数据大屏
         id_list = [fund_id["fund_id"] for fund_id in fund_list]
         name_list = [fund_name["name"].replace("\t", "") for fund_name in fund_list]
         return id_list, name_list
+
+
+class Inform(FundDb):
+    def data(self):  # 信息通知
+        db, cursor = self.db()
+        fund_id_list, fun_name_list = self._fund_id_list()
+        res = {}
+        for fund_id, fund_name in zip(fund_id_list, fun_name_list):
+            sql = "SELECT profit_loss,date FROM seven_days_profit_loss WHERE fund_id={} ORDER BY id DESC LIMIT 1;".format(
+                fund_id)
+            cursor.execute(sql)
+            profit_loss = cursor.fetchall()
+            date = datetime.strftime(profit_loss[0]["date"], '%Y-%m-%d')
+            res[fund_id] = {"name": fund_name,
+                            "profit_loss": profit_loss[0]["profit_loss"],
+                            "date": date}
+        return res
+
+
+class Home(View, FundDb):  # 数据大屏
 
     def _config(self):
         db, cursor = self.db()
@@ -214,21 +231,6 @@ class Home(View, FundDb):  # 数据大屏
             ret[fund] = fund_data
         return ret
 
-    def _inform(self):  # 信息通知
-        db, cursor = self.db()
-        fund_id_list, fun_name_list = self._fund_id_list()
-        res = {}
-        for fund_id, fund_name in zip(fund_id_list, fun_name_list):
-            sql = "SELECT profit_loss,date FROM seven_days_profit_loss WHERE fund_id={} ORDER BY id DESC LIMIT 1;".format(
-                fund_id)
-            cursor.execute(sql)
-            profit_loss = cursor.fetchall()
-            date = datetime.strftime(profit_loss[0]["date"], '%Y-%m-%d')
-            res[fund_id] = {"name": fund_name,
-                            "profit_loss": profit_loss[0]["profit_loss"],
-                            "date": date}
-        return res
-
     def get(self, request):
         user = request.COOKIES.get("user")
         cookie_date = request.COOKIES.get("new_date")
@@ -237,7 +239,8 @@ class Home(View, FundDb):  # 数据大屏
         date7, value008888, value004746, value013291, value013048 = self._line_chart(cookie_date)
         textvalue = _get_textvalue()
         fund_floatings = self._fund_floating()
-        inform_dict = self._inform()
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
         ret = render(request, "index.html",
                      {"user": user,
                       'm': m, "date": date, "money": money, "now_money": now_money,
