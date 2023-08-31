@@ -197,7 +197,7 @@ class Home(View, FundDb):  # 数据大屏
         db.close()
         date7, value008888, value004746, value013291, value013048 = [], [], [], [], []
         for x, y, z, r in zip(daydict["008888"], daydict["004746"], daydict["013291"], daydict["013048"]):
-            date7.append(x["date"])
+            date7.append(datetime.strftime(x["date"], '%Y-%m-%d'))
             value008888.append(x["profit_loss"])
             value004746.append(y["profit_loss"])
             value013291.append(z["profit_loss"])
