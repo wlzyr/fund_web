@@ -258,5 +258,9 @@ class Home(View, FundDb):  # 数据大屏
 
 
 class Error(View):  # 404
-    def get(self, request):
-        return render(request, "error.html")
+    @staticmethod
+    def get(request):
+        user = request.COOKIES.get("user")
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()
+        return render(request, "error.html", {"user": user, "inform_dict": inform_dict})

@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, re_path
-from views.authentication import Login
+from views.authentication import Login, Exit
 from views.bi import Home, Error
 from views.data import FundInf, Delete, Update, SumData, WeekData
 from views.fund_date_set import FundFloatSet, Config
@@ -23,6 +23,7 @@ from views.simulate import StrategySimulate, SimulateLog
 
 urlpatterns = [
     path("", Login.as_view(), name="login"),  # 登录
+    path("exit/", Exit.as_view(), name="Exit"),  # 登出
 
     path('index/', Home.as_view(), name="Bi"),  # 数据大屏
 

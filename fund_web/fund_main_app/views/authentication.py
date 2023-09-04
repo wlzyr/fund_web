@@ -5,6 +5,7 @@ from django.shortcuts import render, redirect
 from django.views import View
 
 from fund_web.settings import DB_IPADDRESS, DB_PASSWORD, PORT
+from django.contrib.sessions.backends.db import SessionStore
 
 
 class FundDb(object):  # 数据库object
@@ -41,3 +42,11 @@ class Login(View, FundDb):  # 登录
             return ret
         else:
             return render(request, "login.html", {"color": "form-control-red", "err": "账号密码错误"})
+
+
+class Exit(View):
+    @staticmethod
+    def get(request):
+        login_status = request.COOKIES.get("login_status")
+        del request.session[login_status]
+        return redirect("login")
