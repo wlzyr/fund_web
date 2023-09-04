@@ -83,24 +83,26 @@ class FundDb(object):  # 数据库object
 
     def _fund_id_list(self):  # 获取基金id
         db, cursor = self.db()
-        sql = "SELECT fund_id,name FROM fund_inf;"
+        sql = "SELECT fund_id,name,abbr FROM fund_inf;"
         cursor.execute(sql)
         fund_list = cursor.fetchall()
         id_list = [fund_id["fund_id"] for fund_id in fund_list]
         name_list = [fund_name["name"].replace("\t", "") for fund_name in fund_list]
-        return id_list, name_list
+        abbr_list = [fund_name["abbr"].replace("\t", "") for fund_name in fund_list]
+        return id_list, name_list, abbr_list
 
 
 class Inform(FundDb):
     def data(self):  # 信息通知
         db, cursor = self.db()
-        fund_id_list, fun_name_list = self._fund_id_list()
+        fund_id_list, fun_name_list, _ = self._fund_id_list()
         res = {}
         for fund_id, fund_name in zip(fund_id_list, fun_name_list):
             sql = "SELECT profit_loss,date FROM seven_days_profit_loss WHERE fund_id={} ORDER BY id DESC LIMIT 1;".format(
                 fund_id)
             cursor.execute(sql)
             profit_loss = cursor.fetchall()
+            if not profit_loss: continue
             date = datetime.strftime(profit_loss[0]["date"], '%Y-%m-%d')
             res[fund_id] = {"name": fund_name,
                             "profit_loss": profit_loss[0]["profit_loss"],
@@ -152,7 +154,7 @@ class Home(View, FundDb):  # 数据大屏
 
     def _pie_chart(self):
         db, cursor = self.db()
-        id_list, _ = self._fund_id_list()
+        id_list, _, hold_name = self._fund_id_list()
         hold_num = []
         for i in id_list:
             sql_hold = "select hold from fund_inf where fund_id={} and ch_name='z_record'".format(i)
@@ -166,14 +168,14 @@ class Home(View, FundDb):  # 数据大屏
                 hold_week[0]["sum(cr_change)"] = "0"
             hold_num.append(int(hold_week[0]["sum(cr_change)"]) + hold_int)
         db.close()
-        hold_name = ["易方达上证50", "富国沪深300", "华夏国证半导体芯片", "富国中证新能源汽车"]
         return hold_name, hold_num
 
     def _line_chart(self, cookie_date):
         db, cursor = self.db()
-        id_list, _ = self._fund_id_list()
-        daydict = {}
-        for id in id_list:
+        id_list, _, abbr_list = self._fund_id_list()
+        res = {}
+        date_list = []
+        for id, abbr in zip(id_list, abbr_list):
             t = time.strftime("%Y-%m-%d")
             new_date = time.mktime(time.strptime(t, "%Y-%m-%d"))
             if not cookie_date or cookie_date != str(new_date):
@@ -193,16 +195,13 @@ class Home(View, FundDb):  # 数据大屏
             sql = "select date,profit_loss from seven_days_profit_loss where fund_id={}".format(id)
             cursor.execute(sql)
             daydata = cursor.fetchall()
-            daydict[id] = daydata
+            res[abbr] = []
+            for day_info in daydata:
+                if len(date_list) != 7:
+                    date_list.append(datetime.strftime(day_info["date"], '%Y-%m-%d'))
+                res[abbr].append(({"profit_loss": day_info["profit_loss"]}))
         db.close()
-        date7, value008888, value004746, value013291, value013048 = [], [], [], [], []
-        for x, y, z, r in zip(daydict["008888"], daydict["004746"], daydict["013291"], daydict["013048"]):
-            date7.append(datetime.strftime(x["date"], '%Y-%m-%d'))
-            value008888.append(x["profit_loss"])
-            value004746.append(y["profit_loss"])
-            value013291.append(z["profit_loss"])
-            value013048.append(r["profit_loss"])
-        return date7, value008888, value004746, value013291, value013048
+        return res, date_list
 
     def _fund_floating(self):  # 基金涨幅
         fund_list = []
@@ -236,7 +235,7 @@ class Home(View, FundDb):  # 数据大屏
         cookie_date = request.COOKIES.get("new_date")
         m, date, money, now_money = self._config()
         hold_name, hold_num = self._pie_chart()
-        date7, value008888, value004746, value013291, value013048 = self._line_chart(cookie_date)
+        date7, date_list = self._line_chart(cookie_date)
         textvalue = _get_textvalue()
         fund_floatings = self._fund_floating()
         inform_obj = Inform()
@@ -244,9 +243,8 @@ class Home(View, FundDb):  # 数据大屏
         ret = render(request, "index.html",
                      {"user": user,
                       'm': m, "date": date, "money": money, "now_money": now_money,
-                      "hold_name": hold_name, "hold_num": hold_num,
-                      "date7": date7, "value013291": value013291, "value013048": value013048,
-                      "value004746": value004746, "value008888": value008888,
+                      "hold": zip(hold_name, hold_num), "hold_name": hold_name,
+                      "date7": date7, "date_list": date_list,
                       "textvalue": textvalue,
                       "fund_floatings": fund_floatings,
                       "inform_dict": inform_dict,

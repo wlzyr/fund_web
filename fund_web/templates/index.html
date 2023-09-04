@@ -132,8 +132,8 @@
                                               },
                                               legend: {
                                                     data: [
-                                                    {% for i in hold_name %}
-                                                        '{{ i }}',
+                                                    {% for name in hold_name %}
+                                                        '{{ name }}',
                                                     {% endfor %}
                                                     ]
                                               },
@@ -151,52 +151,28 @@
                                               xAxis: {
                                                 type: 'category',
                                                 boundaryGap: false,
-                                                data: ['{{ date7.0 }}', '{{ date7.1 }}', '{{ date7.2 }}', '{{ date7.3 }}', '{{ date7.4 }}', '{{ date7.5 }}', '{{ date7.6 }}']
+                                                data: [
+                                                    {% for date in date_list %}
+                                                        '{{ date }}',
+                                                    {% endfor %}
+                                                ]
                                               },
                                               yAxis: {
                                                 type: 'value'
                                               },
                                               series: [
+                                              {% for name,data in date7.items %}
                                                 {
-                                                  name: '{{ hold_name.0 }}',
+                                                  name: '{{ name }}',
                                                   type: 'line',
                                                   stack: 'Total',
                                                   data: [
-                                                  {% for i0 in value004746 %}
-                                                  {{ i0 }},
+                                                  {% for profit_loss in data %}
+                                                    {{ profit_loss.profit_loss }},
                                                   {% endfor %}
                                                   ]
                                                 },
-                                                {
-                                                  name: '{{ hold_name.1 }}',
-                                                  type: 'line',
-                                                  stack: 'Total',
-                                                  data: [
-                                                  {% for i1 in value013291 %}
-                                                  {{ i1 }},
-                                                  {% endfor %}
-                                                  ]
-                                                },
-                                                {
-                                                  name: '{{ hold_name.2 }}',
-                                                  type: 'line',
-                                                  stack: 'Total',
-                                                  data: [
-                                                  {% for i2 in value008888 %}
-                                                  {{ i2 }},
-                                                  {% endfor %}
-                                                  ]
-                                                },
-                                                {
-                                                  name: '{{ hold_name.3 }}',
-                                                  type: 'line',
-                                                  stack: 'Total',
-                                                  data: [
-                                                  {% for i3 in value013048 %}
-                                                  {{ i3 }},
-                                                  {% endfor %}
-                                                  ]
-                                                }
+                                              {% endfor %}
                                               ]
                                             };
                                             option && myChart.setOption(option);
@@ -223,7 +199,7 @@
                                                                 trigger: 'item'
                                                               },
                                                               legend: {
-                                                                top: '5%',
+                                                                top: '0%',
                                                                 left: 'center'
                                                               },
                                                               series: [
@@ -252,10 +228,9 @@
                                                                     show: false
                                                                   },
                                                                   data: [
-                                                                    { value: {{ hold_num.0 }}, name: '{{ hold_name.0 }}' },
-                                                                    { value: {{ hold_num.1 }}, name: '{{ hold_name.1 }}' },
-                                                                    { value: {{ hold_num.2 }}, name: '{{ hold_name.2 }}' },
-                                                                    { value: {{ hold_num.3 }}, name: '{{ hold_name.3 }}' }
+                                                                    {% for hold_name,hold_num in hold %}
+                                                                        { value: {{ hold_num }}, name: '{{ hold_name }}' },
+                                                                    {% endfor %}
                                                                   ]
                                                                 }
                                                               ]
