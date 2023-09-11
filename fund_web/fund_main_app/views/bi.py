@@ -50,16 +50,18 @@ def _get_textvalue():
         "Referer": "https://caifuhao.eastmoney.com/",
     }
     html = requests.get(
-        url=r'https://i.eastmoney.com/api/guba/userdynamiclistv2?uid=3279356484338770&pagenum=1&pagesize=10&type=1&_=1694411926278',
+        url=r'https://i.eastmoney.com/api/guba/userdynamiclistv2?uid=6082094936906114&pagenum=1&pagesize=10&type=1&_=1694426400455',
         headers=tt_he)
     text = json.loads(html.text)
     news = []
+    new_url = ''
     for text_url in text["result"]:
         news.append(text_url["extend"]["ArtCode"])
     for new in news:
         id = re.findall(r'\d', new)
         id = "".join(id)
-        html = requests.get(url=r'https://caifuhao.eastmoney.com/news/{}'.format(str(id)), headers=tt_he)
+        new_url = r'https://caifuhao.eastmoney.com/news/{}'.format(str(id))
+        html = requests.get(url=new_url, headers=tt_he)
         temp = BeautifulSoup(html.text, "lxml")
         if temp.find_all('p')[:-3]:
             if temp.find_all('p')[:-3][0].string != " " and temp.find_all('p')[:-3][0].string != None:
@@ -79,8 +81,13 @@ def _get_textvalue():
                 return value
 
             value += dfs(i)
-    if value == "": value = "暂无新消息"
-    return value
+
+    if value == "":
+        value = "暂无新消息"
+    else:
+        value = value[:1100] + "..."
+
+    return value, new_url
 
 
 class FundDb(object):
@@ -284,7 +291,7 @@ class Home(View, FundDb):
         m, date, money, now_money = self._config()  # 基金概括
         hold_name, hold_num = self._pie_chart()  # 持仓比例
         date7, date_list = self._line_chart(cookie_date)  # 7天业绩走势
-        textvalue = _get_textvalue()  # 最新消息
+        textvalue, new_url = _get_textvalue()  # 最新消息
         fund_floatings = self._fund_floating()  # 基金涨幅
         inform_obj = Inform()
         inform_dict = inform_obj.data()  # 消息通知
@@ -293,7 +300,7 @@ class Home(View, FundDb):
                       'm': m, "date": date, "money": money, "now_money": now_money,
                       "hold": zip(hold_name, hold_num), "hold_name": hold_name,
                       "date7": date7, "date_list": date_list,
-                      "textvalue": textvalue,
+                      "textvalue": textvalue, "new_url": new_url,
                       "fund_floatings": fund_floatings,
                       "inform_dict": inform_dict,
                       })
