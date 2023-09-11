@@ -50,10 +50,12 @@ def _get_textvalue():
         "Referer": "https://caifuhao.eastmoney.com/",
     }
     html = requests.get(
-        url=r'https://caifuhaoapi.eastmoney.com/api/v1/webchannel/Article/GetAuthorNewList?authorid=125612&pagesize=10&pageindex=1&callback=jQuery18305579618504588668_1675134968001&businessid=0.11597124106753243&_=1675134969805',
+        url=r'https://i.eastmoney.com/api/guba/userdynamiclistv2?uid=3279356484338770&pagenum=1&pagesize=10&type=1&_=1694411926278',
         headers=tt_he)
-    result = re.findall(r'"Result":\[{.*\],', html.text)
-    news = re.findall(r'"ArtCode":"[0-9]*"', result[0])
+    text = json.loads(html.text)
+    news = []
+    for text_url in text["result"]:
+        news.append(text_url["extend"]["ArtCode"])
     for new in news:
         id = re.findall(r'\d', new)
         id = "".join(id)
@@ -77,6 +79,7 @@ def _get_textvalue():
                 return value
 
             value += dfs(i)
+    if value == "": value = "暂无新消息"
     return value
 
 
