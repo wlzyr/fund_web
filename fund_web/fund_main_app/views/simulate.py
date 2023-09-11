@@ -9,19 +9,14 @@ from django.views import View
 
 from fund_web.settings import DB_IPADDRESS, DB_PASSWORD, PORT
 from fund_main_app.views import data as data
-from views.bi import Inform
+from views.bi import Inform, FundDb
 
 
-class FundDb(object):  # 数据库object
-    @staticmethod
-    def db():
-        db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
-                             cursorclass=pymysql.cursors.DictCursor, port=PORT)
-        cursor = db.cursor()
-        return db, cursor
+class fund_date(object):
+    """
+    策略模拟数据
+    """
 
-
-class fund_date(object):  # 策略模拟数据
     def __init__(self, fund_id, date_type):
         self.fund_id = fund_id
         if date_type == '1':
@@ -32,6 +27,10 @@ class fund_date(object):  # 策略模拟数据
             self.star = 12
 
     def date(self):
+        """
+        获取基金历史净值
+        :return: {时间:[净值,涨幅]}
+        """
         fund_dict = {}
         for id in range(self.star, 0, -1):  # 19, 0, -1
             url = "http://api.fund.eastmoney.com/f10/lsjz?callback=jQuery183042533241398945254_1631367478759&fundCode=" + str(
@@ -49,10 +48,14 @@ class fund_date(object):  # 策略模拟数据
             for day_info in fund_data[::-1]:
                 if not day_info["DWJZ"] or not day_info["JZZZL"]: continue
                 fund_dict[day_info["FSRQ"]] = [day_info["DWJZ"], day_info["JZZZL"]]
-        return fund_dict  # {时间:[净值,涨幅]}
+        return fund_dict
 
 
 class StrategyData(FundDb):
+    """
+    获取策略数据(策略名称)
+    """
+
     def data(self):
         strategy_list = []
         db, cursor = self.db()
@@ -64,13 +67,17 @@ class StrategyData(FundDb):
         return strategy_list
 
 
-class StrategySimulate(View):  # 策略模拟
+class StrategySimulate(View):
+    """
+    策略模拟
+    """
+
     def get(self, request):
         user = request.COOKIES.get("user")
         strategy_list_obj = StrategyData()
-        strategy_list = strategy_list_obj.data()
+        strategy_list = strategy_list_obj.data()  # 获取策略数据
         inform_obj = Inform()
-        inform_dict = inform_obj.data()
+        inform_dict = inform_obj.data()  # 消息通知
         return render(request, "strategy_simulate.html", {
             "user": user,
             "is_post": 0,
@@ -84,22 +91,23 @@ class StrategySimulate(View):  # 策略模拟
         date_type = request.POST.get("date")
         strategy = request.POST.get("strategy")
         strategy_list_obj = StrategyData()
-        strategy_list = strategy_list_obj.data()
-        fund_obj = fund_date(fund_id, date_type)
-        date = fund_obj.date()
-        if not date: return redirect("Error")
-        strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
-        strategy_obj = strategy()
-        profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
-        # try:
-        #     fund_obj = fund_date(fund_id, date_type)
-        #     date = fund_obj.date()
-        #     if not date: return redirect("Error")
-        #     strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
-        #     strategy_obj = strategy()
-        #     profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
-        # except:
-        #     return redirect("Error")
+        strategy_list = strategy_list_obj.data()  # 获取策略数据
+        # fund_obj = fund_date(fund_id, date_type)
+        # date = fund_obj.date()
+        # if not date: return redirect("Error")
+        # strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
+        # strategy_obj = strategy()
+        # profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
+        try:
+            fund_obj = fund_date(fund_id, date_type)
+            date = fund_obj.date()
+            if not date: return redirect("Error")
+            strategy = getattr(importlib.import_module("fund_main_app.algorithm.{}".format(strategy)), "fund_algorithm")
+            strategy_obj = strategy()
+            profit_loss_list, money_list = strategy_obj.main(date, fund_id, date_type)
+        except:
+            return redirect("Error")
+
         return render(request, "strategy_simulate.html", {
             "user": user,
             "profit_loss_list": profit_loss_list,
@@ -109,9 +117,11 @@ class StrategySimulate(View):  # 策略模拟
         })
 
 
-
-
 class SimulateLog(View, FundDb):
+    """
+    策略模拟日志
+    """
+
     def get(self, request):
         pag = request.GET.get("pag", 0)
         pag = int(pag)

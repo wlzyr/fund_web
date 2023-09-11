@@ -7,17 +7,14 @@ from django.views import View
 from fund_web.settings import DB_IPADDRESS, DB_PASSWORD, PORT
 from django.contrib.sessions.backends.db import SessionStore
 
-
-class FundDb(object):  # 数据库object
-    @staticmethod
-    def db():
-        db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
-                             cursorclass=pymysql.cursors.DictCursor, port=PORT)
-        cursor = db.cursor()
-        return db, cursor
+from views.bi import FundDb
 
 
-class Login(View, FundDb):  # 登录
+class Login(View, FundDb):
+    """
+    登录
+    """
+
     def get(self, request):
         return render(request, "login.html", {"color": "form-control"})
 
@@ -45,6 +42,10 @@ class Login(View, FundDb):  # 登录
 
 
 class Exit(View):
+    """
+    登出
+    """
+
     @staticmethod
     def get(request):
         login_status = request.COOKIES.get("login_status")

@@ -15,6 +15,10 @@ from fund_web.settings import DB_PASSWORD, DB_IPADDRESS, PORT
 
 # Create your views here.
 def _linedata(fund_id):  # 7天业绩走势
+    """
+    :param fund_id: 基金编号
+    :return: {时间:[净值,涨幅]}
+    """
     fund_dict = {}
     for id in range(0, 1):
         url = "http://api.fund.eastmoney.com/f10/lsjz?callback=jQuery183042533241398945254_1631367478759&fundCode=" + str(
@@ -32,10 +36,13 @@ def _linedata(fund_id):  # 7天业绩走势
         for day_info in fund_data[::-1]:
             if not day_info["JZZZL"]: day_info["JZZZL"] = 0
             fund_dict[day_info["FSRQ"]] = [day_info["DWJZ"], day_info["JZZZL"]]
-    return fund_dict  # {时间:[净值,涨幅]}
+    return fund_dict
 
 
-def _get_textvalue():  # 最新消息
+def _get_textvalue():
+    """
+    获取基金最新信息
+    """
     tt_cookie = "qgqp_b_id=7110e64f9def8a6d6521b2453aff65fa; em_hq_fls=js; intellpositionL=1472.8px; intellpositionT=2214px; AUTH_FUND.EASTMONEY.COM_GSJZ=AUTH*TTJJ*TOKEN; em-quote-version=topspeed; HAList=a-sh-601728-N%u7535%u4FE1%2Ca-sz-300782-%u5353%u80DC%u5FAE%2Ca-sh-603501-%u97E6%u5C14%u80A1%u4EFD%2Ca-sh-603986-%u5146%u6613%u521B%u65B0%2Ca-sz-300661-%u5723%u90A6%u80A1%u4EFD%2Cd-hk-01211%2Ca-sz-300014-%u4EBF%u7EAC%u9502%u80FD%2Ca-sh-603659-%u749E%u6CF0%u6765%2Ca-sz-300750-%u5B81%u5FB7%u65F6%u4EE3%2Ca-sh-603811-%u8BDA%u610F%u836F%u4E1A%2Ca-sz-300408-%u4E09%u73AF%u96C6%u56E2%2Cd-hk-00700; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND7=null; st_si=95391201505798; st_asi=delete; EMFUND0=null; EMFUND8=01-31%2010%3A55%3A40@%23%24%u56FD%u6CF0800%u6C7D%u8F66%u4E0E%u96F6%u90E8%u4EF6ETF%u8054%u63A5A@%23%24012973; EMFUND9=01-31 10:56:00@#$%u82F1%u5927%u56FD%u4F01%u6539%u9769%u4E3B%u9898%u80A1%u7968@%23%24001678; st_pvi=98760667666399; st_sp=2021-02-19%2012%3A00%3A58; st_inirUrl=http%3A%2F%2Fwww.zodiacn.ltd%2F; st_sn=16; st_psi=20230131111551181-119101302131-0498410301"
     tt_he = {
         "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.70",
@@ -73,15 +80,26 @@ def _get_textvalue():  # 最新消息
     return value
 
 
-class FundDb(object):  # 数据库object
+class FundDb(object):
+    """
+    数据库object
+    """
+
     @staticmethod
     def db():
+        """
+        数据库连接
+        :return:db, cursor
+        """
         db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
                              cursorclass=pymysql.cursors.DictCursor, port=PORT)
         cursor = db.cursor()
         return db, cursor
 
-    def _fund_id_list(self):  # 获取基金id
+    def _fund_id_list(self):
+        """
+        获取基金id
+        """
         db, cursor = self.db()
         sql = "SELECT fund_id,name,abbr FROM fund_inf;"
         cursor.execute(sql)
@@ -93,7 +111,14 @@ class FundDb(object):  # 数据库object
 
 
 class Inform(FundDb):
-    def data(self):  # 信息通知
+    """
+    信息通知
+    """
+
+    def data(self):
+        """
+        信息数据
+        """
         db, cursor = self.db()
         fund_id_list, fun_name_list, _ = self._fund_id_list()
         res = {}
@@ -110,9 +135,16 @@ class Inform(FundDb):
         return res
 
 
-class Home(View, FundDb):  # 数据大屏
+class Home(View, FundDb):
+    """
+    数据大屏
+    """
 
     def _config(self):
+        """
+        基金概括
+        :return:m(倍率), date(时间), money(预定金额), now_money(实际金额)
+        """
         db, cursor = self.db()
         sql = "select config  from config_table"
         cursor.execute(sql)
@@ -153,6 +185,10 @@ class Home(View, FundDb):  # 数据大屏
         return m, date, money, now_money
 
     def _pie_chart(self):
+        """
+        持仓比例(饼图)
+        :return:hold_name(持仓基金名称), hold_num（持仓基金仓位）
+        """
         db, cursor = self.db()
         id_list, _, hold_name = self._fund_id_list()
         hold_num = []
@@ -171,6 +207,11 @@ class Home(View, FundDb):  # 数据大屏
         return hold_name, hold_num
 
     def _line_chart(self, cookie_date):
+        """
+        7天业绩走势
+        :param cookie_date:上次更新时间
+        :return: res(持仓基金7天的涨幅), date_list(7天的日期)
+        """
         db, cursor = self.db()
         id_list, _, abbr_list = self._fund_id_list()
         res = {}
@@ -203,7 +244,11 @@ class Home(View, FundDb):  # 数据大屏
         db.close()
         return res, date_list
 
-    def _fund_floating(self):  # 基金涨幅
+    def _fund_floating(self):
+        """
+        获取基金涨幅
+        :return: ret(基金实时涨幅情况)
+        """
         fund_list = []
         db, cursor = self.db()
         sql = """select fund_id from new_fund_Increase;"""
@@ -233,13 +278,13 @@ class Home(View, FundDb):  # 数据大屏
     def get(self, request):
         user = request.COOKIES.get("user")
         cookie_date = request.COOKIES.get("new_date")
-        m, date, money, now_money = self._config()
-        hold_name, hold_num = self._pie_chart()
-        date7, date_list = self._line_chart(cookie_date)
-        textvalue = _get_textvalue()
-        fund_floatings = self._fund_floating()
+        m, date, money, now_money = self._config()  # 基金概括
+        hold_name, hold_num = self._pie_chart()  # 持仓比例
+        date7, date_list = self._line_chart(cookie_date)  # 7天业绩走势
+        textvalue = _get_textvalue()  # 最新消息
+        fund_floatings = self._fund_floating()  # 基金涨幅
         inform_obj = Inform()
-        inform_dict = inform_obj.data()
+        inform_dict = inform_obj.data()  # 消息通知
         ret = render(request, "index.html",
                      {"user": user,
                       'm': m, "date": date, "money": money, "now_money": now_money,
@@ -262,5 +307,5 @@ class Error(View):  # 404
     def get(request):
         user = request.COOKIES.get("user")
         inform_obj = Inform()
-        inform_dict = inform_obj.data()
+        inform_dict = inform_obj.data()  # 消息通知
         return render(request, "error.html", {"user": user, "inform_dict": inform_dict})

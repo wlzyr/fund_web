@@ -7,20 +7,19 @@ from django.http import JsonResponse
 import datetime
 
 from fund_web.settings import DB_PASSWORD, DB_IPADDRESS, PORT
-from views.bi import Inform
+from views.bi import Inform, FundDb
 
 
-class FundDb(object):  # 数据库object
-    @staticmethod
-    def db():
-        db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
-                             cursorclass=pymysql.cursors.DictCursor, port=PORT)
-        cursor = db.cursor()
-        return db, cursor
+class Paginator(object):
+    """
+    分页
+    """
 
-
-class Paginator(object):  # 分页
     def __init__(self, data_list, pag):
+        """
+        :param data_list: 数据列表
+        :param pag: 每页显示条数
+        """
         self.data_list = []
         self.sum_num = len(data_list)
         s = len(data_list)
@@ -28,19 +27,39 @@ class Paginator(object):  # 分页
             self.data_list.append(data_list[i:i + pag if i + pag < s else s])
 
     def get_page(self, page):
+        """
+        获取当前页数据
+        :param page: 当前页
+        :return: 当前页数据
+        """
         return self.data_list[page]
 
     def get_sum_page(self):
+        """
+        获取总页数
+        :return: 总页数
+        """
         sum_page = [i + 1 for i in range(len(self.data_list))]
         return sum_page
 
     def get_sum_num(self):
+        """
+        获取总数据条数
+        :return: 总数据条数
+        """
         return self.sum_num
 
 
-class WeekData(View, FundDb):  # 周数据
+class WeekData(View, FundDb):
+    """
+    周数据
+    """
 
     def _select_data(self):
+        """
+        查询周数据
+        :return: 周数据
+        """
         db, cursor = self.db()
         sql = "select * from week_journal"
         cursor.execute(sql)
@@ -50,18 +69,27 @@ class WeekData(View, FundDb):  # 周数据
         return week_journal
 
     def get(self, request):
-        week_journal = self._select_data()
+        week_journal = self._select_data()  # 查询周数据
         user = request.COOKIES.get("user")
         inform_obj = Inform()
-        inform_dict = inform_obj.data()
+        inform_dict = inform_obj.data()  # 消息通知
         return render(request, "data_list.html", {
             "journal": week_journal, "user": user,
             "table_name": "week_journal", "inform_dict": inform_dict,
         })
 
 
-class SumData(View, FundDb):  # 总数据
+class SumData(View, FundDb):
+    """
+    总数据
+    """
+
     def _select_data(self, pag=0):
+        """
+        查询总数据
+        :param pag: 页码
+        :return: deal_list(数据), sum_page(总页数), sum_num(总数据条数)
+        """
         db, cursor = self.db()
         sql = "select * from sum_journal ORDER BY id DESC LIMIT 100"
         cursor.execute(sql)
@@ -78,10 +106,10 @@ class SumData(View, FundDb):  # 总数据
         pag = request.GET.get("pag", 0)
         pag = int(pag)
         if pag >= 1: pag = pag - 1
-        sum_journal, sum_page, sum_num = self._select_data(pag)
+        sum_journal, sum_page, sum_num = self._select_data(pag)  # 总数据
         user = request.COOKIES.get("user")
         inform_obj = Inform()
-        inform_dict = inform_obj.data()
+        inform_dict = inform_obj.data()  # 消息通知
         return render(request, "data_list.html", {
             "journal": sum_journal,
             "user": user,
@@ -96,7 +124,11 @@ class SumData(View, FundDb):  # 总数据
         })
 
 
-class Delete(View, FundDb):  # 总/周数据的删除
+class Delete(View, FundDb):
+    """
+    总/周数据的删除
+    """
+
     def get(self, request, delete_obj, pk):
         db, cursor = self.db()
         sql = "delete from {} where id={}".format(delete_obj, pk)
@@ -106,8 +138,16 @@ class Delete(View, FundDb):  # 总/周数据的删除
         return JsonResponse({"status": 200})
 
 
-class FundInf(View, FundDb):  # 个基金数据
+class FundInf(View, FundDb):
+    """
+    个基金数据
+    """
+
     def _inf(self):
+        """
+        获取所有基金数据
+        :return: 所有基金数据
+        """
         db, cursor = self.db()
         sql = "select * from fund_inf"
         cursor.execute(sql)
@@ -115,10 +155,10 @@ class FundInf(View, FundDb):  # 个基金数据
         return inf_data
 
     def get(self, request):
-        inf_data = self._inf()
+        inf_data = self._inf()  # 全部基金数据
         user = request.COOKIES.get("user")
         inform_obj = Inform()
-        inform_dict = inform_obj.data()
+        inform_dict = inform_obj.data()  # 消息通知
         return render(request, "fund_inf.html", {
             "inf_data": inf_data,
             "user": user,
@@ -126,7 +166,11 @@ class FundInf(View, FundDb):  # 个基金数据
         })
 
 
-class Update(View, FundDb):  # 总/周/个人数据编辑
+class Update(View, FundDb):
+    """
+    总/周/个人数据编辑
+    """
+
     def get(self, request, update_obj, pk):
         value = "hold"
         if update_obj != "fund_inf":
