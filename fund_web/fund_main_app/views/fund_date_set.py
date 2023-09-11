@@ -7,17 +7,7 @@ import time
 import fund_main_app.web_socket
 from chinese_calendar import is_workday
 import datetime
-from fund_web.settings import DB_PASSWORD, DB_IPADDRESS, PORT
-from views.bi import Inform
-
-
-class FundDb(object):  # 数据库object
-    @staticmethod
-    def db():
-        db = pymysql.connect(host=DB_IPADDRESS, user="root", passwd=DB_PASSWORD, database="fund",
-                             cursorclass=pymysql.cursors.DictCursor, port=PORT)
-        cursor = db.cursor()
-        return db, cursor
+from views.bi import Inform, FundDb
 
 
 class Config(View, FundDb):  # 基金概括设置
@@ -73,15 +63,14 @@ class Config(View, FundDb):  # 基金概括设置
     def post(self, request):
         m, date = request.POST.get("m"), request.POST.get("date")
         date = date.split(":")
-        money_008888, day_008888 = request.POST.get("money_008888"), request.POST.get("day_008888")
-        money_004746, day_004746 = request.POST.get("money_004746"), request.POST.get("day_004746")
-        money_013291, day_013291 = request.POST.get("money_013291"), request.POST.get("day_013291")
-        money_013048, day_013048 = request.POST.get("money_013048"), request.POST.get("day_013048")
-        self._up_config(m, date,
-                        {"008888": {"reserve_money": money_008888, "day": day_008888},
-                         "004746": {"reserve_money": money_004746, "day": day_004746},
-                         "013291": {"reserve_money": money_013291, "day": day_013291},
-                         "013048": {"reserve_money": money_013048, "day": day_013048}})
+        rate_reserve_money = {}
+        id_list, _, _ = self._fund_id_list()
+        for fund_id in id_list:
+            money = request.POST.get("money_{}".format(fund_id))
+            day = request.POST.get("day_{}".format(fund_id))
+            rate_reserve_money[fund_id] = {"reserve_money": money, "day": day}
+
+        self._up_config(m, date, rate_reserve_money)
         return redirect("Bi")
 
 
