@@ -39,7 +39,7 @@
                         </li>
                         {% for fund in fund_list %}
                         <li>
-                            <span class="required_notification" style="font-size: 14px">{{ fund.name }}({{ fund.fund_id }})</span>
+                            <span class="required_notification" style="font-size: 14px">* {{ fund.name }}({{ fund.fund_id }})</span>
                         </li>
                         <li>
                             <label for="email">预定金额:</label>
@@ -51,7 +51,7 @@
                         </li>
                         {% endfor %}
                         <li>
-                            <span class="required_notification" style="font-size: 14px">统一配置</span>
+                            <span class="required_notification" style="font-size: 14px">* 统一配置</span>
                         </li>
                         <li>
                             <label for="name">倍率:</label>
