@@ -1,19 +1,3 @@
-/*
- Navicat Premium Data Transfer
-
- Source Server         : 101.35.131.99
- Source Server Type    : MySQL
- Source Server Version : 50736 (5.7.36)
- Source Host           : 101.35.131.99:3306
- Source Schema         : fund
-
- Target Server Type    : MySQL
- Target Server Version : 50736 (5.7.36)
- File Encoding         : 65001
-
- Date: 29/06/2023 10:46:07
-*/
-
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -118,50 +102,6 @@ CREATE TABLE `config_table`  (
 ) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
--- Table structure for day_004746
--- ----------------------------
-DROP TABLE IF EXISTS `day_004746`;
-CREATE TABLE `day_004746`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
-  `value` float NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 631 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for day_008888
--- ----------------------------
-DROP TABLE IF EXISTS `day_008888`;
-CREATE TABLE `day_008888`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
-  `value` float NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 624 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for day_013048
--- ----------------------------
-DROP TABLE IF EXISTS `day_013048`;
-CREATE TABLE `day_013048`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
-  `value` float NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 631 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
--- Table structure for day_013291
--- ----------------------------
-DROP TABLE IF EXISTS `day_013291`;
-CREATE TABLE `day_013291`  (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `date` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
-  `value` float NULL DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 624 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
-
--- ----------------------------
 -- Table structure for django_admin_log
 -- ----------------------------
 DROP TABLE IF EXISTS `django_admin_log`;
@@ -223,12 +163,17 @@ CREATE TABLE `django_session`  (
 DROP TABLE IF EXISTS `fund_inf`;
 CREATE TABLE `fund_inf`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `fund_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `fund_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `hold` float NOT NULL,
   `ch_name` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
-  PRIMARY KEY (`id`) USING BTREE,
+  `reserve_money` float NULL DEFAULT NULL,
+  `rate` int(3) NULL DEFAULT NULL,
+  `day` int(3) NULL DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  `abbr` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL,
+  PRIMARY KEY (`id`, `fund_id`) USING BTREE,
   INDEX `fund_id`(`fund_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 9 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 13 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for fund_inf_test
@@ -261,7 +206,21 @@ CREATE TABLE `new_fund_Increase`  (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `fund_id` varchar(16) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 11 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 16 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for seven_days_profit_loss
+-- ----------------------------
+DROP TABLE IF EXISTS `seven_days_profit_loss`;
+CREATE TABLE `seven_days_profit_loss`  (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `fund_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  `date` datetime NULL DEFAULT NULL,
+  `profit_loss` float NULL DEFAULT NULL,
+  PRIMARY KEY (`id`) USING BTREE,
+  INDEX `fund_id`(`fund_id`) USING BTREE,
+  CONSTRAINT `seven_days_profit_loss_ibfk_1` FOREIGN KEY (`fund_id`) REFERENCES `fund_inf` (`fund_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 512 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for simulate_log
@@ -275,7 +234,7 @@ CREATE TABLE `simulate_log`  (
   `date_type` int(11) NOT NULL,
   `top_money` float NOT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 12 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 119 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for strategys
@@ -293,13 +252,14 @@ CREATE TABLE `strategys`  (
 DROP TABLE IF EXISTS `sum_journal`;
 CREATE TABLE `sum_journal`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `fund_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `fund_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `cr_change` float NOT NULL,
   `cr_date` datetime NULL DEFAULT NULL,
   `ch_name` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
-  INDEX `fund_id`(`fund_id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1527 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+  INDEX `fund_id`(`fund_id`) USING BTREE,
+  CONSTRAINT `sum_journal_ibfk_1` FOREIGN KEY (`fund_id`) REFERENCES `fund_inf` (`fund_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1750 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for sum_journal_test
@@ -313,7 +273,7 @@ CREATE TABLE `sum_journal_test`  (
   `ch_name` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
   `profit_loss` float NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 1575 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 519 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for week_journal
@@ -321,14 +281,14 @@ CREATE TABLE `sum_journal_test`  (
 DROP TABLE IF EXISTS `week_journal`;
 CREATE TABLE `week_journal`  (
   `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `fund_id` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `fund_id` varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
   `cr_change` float NOT NULL,
   `cr_date` datetime NULL DEFAULT NULL,
   `ch_name` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE,
   INDEX `fund_id`(`fund_id`) USING BTREE,
   CONSTRAINT `week_journal_ibfk_1` FOREIGN KEY (`fund_id`) REFERENCES `fund_inf` (`fund_id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 868 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 1000 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for week_journal_test
@@ -341,6 +301,6 @@ CREATE TABLE `week_journal_test`  (
   `cr_date` datetime NULL DEFAULT NULL,
   `ch_name` varchar(32) CHARACTER SET latin1 COLLATE latin1_swedish_ci NULL DEFAULT NULL,
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB AUTO_INCREMENT = 679 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
+) ENGINE = InnoDB AUTO_INCREMENT = 249 CHARACTER SET = latin1 COLLATE = latin1_swedish_ci ROW_FORMAT = Dynamic;
 
 SET FOREIGN_KEY_CHECKS = 1;
