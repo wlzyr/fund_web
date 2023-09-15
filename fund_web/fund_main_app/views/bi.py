@@ -69,7 +69,7 @@ def _get_textvalue():
     value = ""
     for i in temp.find_all('p')[:-3]:
         if i.string:
-            value += (i.string)
+            value += (i.string.strip())
         else:
             def dfs(i):
                 idir = dir(i)
@@ -77,7 +77,7 @@ def _get_textvalue():
                     return i
                 value = ""
                 for ii in i.contents:
-                    value += dfs(ii)
+                    value += dfs(ii).strip()
                 return value
 
             value += dfs(i)
