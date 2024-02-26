@@ -155,7 +155,8 @@
                                                     {% for date in date_list %}
                                                         '{{ date }}',
                                                     {% endfor %}
-                                                ]
+                                                ],
+                                                boundaryGap: true,
                                               },
                                               yAxis: {
                                                 type: 'value'
@@ -165,7 +166,7 @@
                                                 {
                                                   name: '{{ name }}',
                                                   type: 'line',
-                                                  stack: 'Total',
+                                                  smooth: true,
                                                   data: [
                                                   {% for profit_loss in data %}
                                                     {{ profit_loss.profit_loss }},
@@ -173,7 +174,7 @@
                                                   ]
                                                 },
                                               {% endfor %}
-                                              ]
+                                              ],
                                             };
                                             option && myChart.setOption(option);
                                         </script>
