@@ -92,6 +92,8 @@ class StrategySimulate(View):
         strategy = request.POST.get("strategy")
         strategy_list_obj = StrategyData()
         strategy_list = strategy_list_obj.data()  # 获取策略数据
+        inform_obj = Inform()
+        inform_dict = inform_obj.data()  # 消息通知
         # fund_obj = fund_date(fund_id, date_type)
         # date = fund_obj.date()
         # if not date: return redirect("Error")
@@ -113,7 +115,8 @@ class StrategySimulate(View):
             "profit_loss_list": profit_loss_list,
             "money_list": money_list,
             "is_post": 1,
-            "strategy_list": strategy_list
+            "strategy_list": strategy_list,
+            "inform_dict": inform_dict,
         })
 
 

@@ -14,7 +14,7 @@ from fund_web.settings import DB_PASSWORD, DB_IPADDRESS, PORT
 
 
 # Create your views here.
-def _linedata(fund_id):  # 7天业绩走势
+def _linedata(fund_id):  # 15天业绩走势
     """
     :param fund_id: 基金编号
     :return: {时间:[净值,涨幅]}
@@ -32,7 +32,7 @@ def _linedata(fund_id):  # 7天业绩走势
         html = requests.get(url=url, headers=he)
         html.encoding = html.apparent_encoding
         fund_data = re.findall(r'\[.*\]', html.text)[0]
-        fund_data = json.loads(fund_data)[0:7]
+        fund_data = json.loads(fund_data)[0:15]
         for day_info in fund_data[::-1]:
             if not day_info["JZZZL"]: day_info["JZZZL"] = 0
             fund_dict[day_info["FSRQ"]] = [day_info["DWJZ"], day_info["JZZZL"]]
@@ -218,7 +218,7 @@ class Home(View, FundDb):
 
     def _line_chart(self, cookie_date):
         """
-        7天业绩走势
+        15天业绩走势
         :param cookie_date:上次更新时间
         :return: res(持仓基金7天的涨幅), date_list(7天的日期)
         """
@@ -248,7 +248,7 @@ class Home(View, FundDb):
             daydata = cursor.fetchall()
             res[abbr] = []
             for day_info in daydata:
-                if len(date_list) != 7:
+                if len(date_list) != 15:
                     date_list.append(datetime.strftime(day_info["date"], '%Y-%m-%d'))
                 res[abbr].append(({"profit_loss": day_info["profit_loss"]}))
         db.close()
@@ -290,7 +290,7 @@ class Home(View, FundDb):
         cookie_date = request.COOKIES.get("new_date")
         m, date, money, now_money = self._config()  # 基金概括
         hold_name, hold_num = self._pie_chart()  # 持仓比例
-        date7, date_list = self._line_chart(cookie_date)  # 7天业绩走势
+        date7, date_list = self._line_chart(cookie_date)  # 15天业绩走势
         textvalue, new_url = _get_textvalue()  # 最新消息
         fund_floatings = self._fund_floating()  # 基金涨幅
         inform_obj = Inform()
