@@ -256,6 +256,10 @@ class Home(View, FundDb):
 
     @staticmethod
     def _hotspot():
+        """
+        获取热门板块
+        :return: res[{浮动盈亏，名称}]
+        """
         tt_cookie = "qgqp_b_id=6aa0da45630bb940299f68d1cd827ded; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND7=null; HAList=ty-1-000001-%u4E0A%u8BC1%u6307%u6570%2Cty-1-000300-%u6CAA%u6DF1300%2Cty-100-SENSEX-%u5370%u5EA6%u5B5F%u4E70SENSEX%2Cty-100-ICEXI-%u51B0%u5C9BICEX%2Cty-100-CSEALL-%u65AF%u91CC%u5170%u5361%u79D1%u4F26%u5761%2Cty-100-KSE100-%u5DF4%u57FA%u65AF%u5766%u5361%u62C9%u5947%2Cty-155-77OR-REPUBLIC%20OF%20GHANA%20%28THE%29%206.375; EMFUND0=null; EMFUND8=01-25%2011%3A45%3A18@%23%24%u534E%u590F%u56FD%u8BC1%u534A%u5BFC%u4F53%u82AF%u7247ETF%u8054%u63A5C@%23%24008888; EMFUND9=02-01 13:59:50@#$%u534E%u590F%u667A%u80DC%u5148%u950B%u80A1%u7968C@%23%24014198; st_si=55013451928066; st_asi=delete; st_pvi=61521603029306; st_sp=2023-10-24%2009%3A53%3A57; st_inirUrl=https%3A%2F%2Fwww.baidu.com%2Flink; st_sn=5; st_psi=20240226110026222-113200301831-1217984057"
         tt_he = {
             "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0",
@@ -265,11 +269,16 @@ class Home(View, FundDb):
         worth = requests.get(url=r'https://quote.eastmoney.com/zhuti/api/todayopportunity', headers=tt_he)
 
         worth_dict = json.loads(worth.text)
+        res = []
 
-        for i in worth_dict["result"][0]["Data"]:
-            print(i.split('|'))
+        for data_dict in worth_dict["result"][0]["Data"]:
+            data_list = data_dict.split('|')
+            res.append({
+                "profit_loss": data_list[0],
+                "name": data_list[2]
+            })
 
-        return
+        return res
 
     def _fund_floating(self):
         """
