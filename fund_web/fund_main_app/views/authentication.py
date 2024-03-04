@@ -16,6 +16,10 @@ class Login(View, FundDb):
     """
 
     def get(self, request):
+        login_status = request.COOKIES.get("login_status")
+        login_seession = request.session.get(login_status)
+        if login_seession:
+            return redirect("/index/")
         return render(request, "login.html", {"color": "form-control"})
 
     def post(self, request):
