@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 
+import bs4
 from django.shortcuts import render
 import pymysql
 import json
@@ -43,24 +44,26 @@ def _get_textvalue():
     """
     获取基金最新信息
     """
-    tt_cookie = "qgqp_b_id=7110e64f9def8a6d6521b2453aff65fa; em_hq_fls=js; intellpositionL=1472.8px; intellpositionT=2214px; AUTH_FUND.EASTMONEY.COM_GSJZ=AUTH*TTJJ*TOKEN; em-quote-version=topspeed; HAList=a-sh-601728-N%u7535%u4FE1%2Ca-sz-300782-%u5353%u80DC%u5FAE%2Ca-sh-603501-%u97E6%u5C14%u80A1%u4EFD%2Ca-sh-603986-%u5146%u6613%u521B%u65B0%2Ca-sz-300661-%u5723%u90A6%u80A1%u4EFD%2Cd-hk-01211%2Ca-sz-300014-%u4EBF%u7EAC%u9502%u80FD%2Ca-sh-603659-%u749E%u6CF0%u6765%2Ca-sz-300750-%u5B81%u5FB7%u65F6%u4EE3%2Ca-sh-603811-%u8BDA%u610F%u836F%u4E1A%2Ca-sz-300408-%u4E09%u73AF%u96C6%u56E2%2Cd-hk-00700; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; EMFUND5=null; EMFUND6=null; EMFUND7=null; st_si=95391201505798; st_asi=delete; EMFUND0=null; EMFUND8=01-31%2010%3A55%3A40@%23%24%u56FD%u6CF0800%u6C7D%u8F66%u4E0E%u96F6%u90E8%u4EF6ETF%u8054%u63A5A@%23%24012973; EMFUND9=01-31 10:56:00@#$%u82F1%u5927%u56FD%u4F01%u6539%u9769%u4E3B%u9898%u80A1%u7968@%23%24001678; st_pvi=98760667666399; st_sp=2021-02-19%2012%3A00%3A58; st_inirUrl=http%3A%2F%2Fwww.zodiacn.ltd%2F; st_sn=16; st_psi=20230131111551181-119101302131-0498410301"
+    tt_cookie = "qgqp_b_id=6aa0da45630bb940299f68d1cd827ded; HAList=ty-1-000001-%u4E0A%u8BC1%u6307%u6570%2Cty-90-BK0896-%u767D%u9152%2Cty-100-KSE100-%u5DF4%u57FA%u65AF%u5766%u5361%u62C9%u5947%2Cty-1-000300-%u6CAA%u6DF1300%2Cty-100-SENSEX-%u5370%u5EA6%u5B5F%u4E70SENSEX%2Cty-100-ICEXI-%u51B0%u5C9BICEX%2Cty-100-CSEALL-%u65AF%u91CC%u5170%u5361%u79D1%u4F26%u5761%2Cty-155-77OR-REPUBLIC%20OF%20GHANA%20%28THE%29%206.375; st_si=14445956617934; st_asi=delete; st_pvi=61521603029306; st_sp=2023-10-24%2009%3A53%3A57; st_inirUrl=https%3A%2F%2Fwww.baidu.com%2Flink; st_sn=5; st_psi=20240412105047684-1190142302762-2842893775"
     tt_he = {
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36 Edg/109.0.1518.70",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36 Edg/123.0.0.0",
         "Cookie": tt_cookie,
-        "Referer": "https://caifuhao.eastmoney.com/",
+        "Referer": "https://finance.eastmoney.com/a/202404123041563494.html",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
     }
     html = requests.get(
-        url=r'https://i.eastmoney.com/api/guba/userdynamiclistv2?uid=6082094936906114&pagenum=1&pagesize=10&type=1&_=1694426400455',
+        url=r'https://finance.eastmoney.com/',
         headers=tt_he)
-    text = json.loads(html.text)
+
+    html.encoding = 'gb2312'
+    soup = bs4.BeautifulSoup(html.text, 'lxml')
+    test = soup.find_all("div", class_="content mt0")
+
     news = []
-    new_url = ''
-    for text_url in text["result"]:
-        news.append(text_url["extend"]["ArtCode"])
-    for new in news:
-        id = re.findall(r'\d', new)
-        id = "".join(id)
-        new_url = r'https://caifuhao.eastmoney.com/news/{}'.format(str(id))
+    for href in test[0].find_all("a"):
+        news.append(href['href'])
+
+    for new_url in news:
         html = requests.get(url=new_url, headers=tt_he)
         temp = BeautifulSoup(html.text, "lxml")
         if temp.find_all('p')[:-3]:
@@ -68,7 +71,11 @@ def _get_textvalue():
                 break
     value = ""
     for i in temp.find_all('p')[:-3]:
+        abandoned = ["方便，快捷", "手机查看财经快讯", "专业，丰富", "一手掌握市场脉搏", "提示：", "微信扫一扫",
+                     "分享到您的", "朋友圈"]
+
         if i.string:
+            if i.string.strip() in abandoned: continue
             value += (i.string.strip())
         else:
             def dfs(i):
