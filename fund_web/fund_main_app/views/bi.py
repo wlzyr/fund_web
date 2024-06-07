@@ -342,6 +342,44 @@ class Home(View, FundDb):
         turnover_num = int(sum_num // 100000000)
         return turnover_num
 
+    @staticmethod
+    def _overall_situation():
+        """
+        获取上证、深证、成交量等数据
+        :return:
+        {
+        shangz:上证指数,shangz_profit_loss:上证指数涨跌,shangz_class:主题
+        shenz:深证指数,shenz_profit_loss:深证指数涨跌,shenz_class:主题
+        turnover_num:成交量
+        }
+        """
+        url = "https://push2.eastmoney.com/api/qt/ulist.np/get?cb=jQuery112303693369501585688_1717745045870&fltt=2&secids=1.000001%2C0.399001&fields=f1%2Cf2%2Cf3%2Cf4%2Cf6%2Cf12%2Cf13%2Cf104%2Cf105%2Cf106&ut=b2884a393a59ad64002292a3e90d46a5&_=1717745045872"
+        tt_cookie = "qgqp_b_id=f6373a3738190ff68c502da24e38db83; EMFUND1=null; EMFUND2=null; EMFUND3=null; EMFUND4=null; AUTH_FUND.EASTMONEY.COM_GSJZ=AUTH*TTJJ*TOKEN; emshistory=%5B%22%E5%8F%B0%E6%B9%BE%E6%8C%87%E6%95%B0%22%5D; st_si=11311620896037; has_jump_to_web=1; st_asi=delete; EMFUND0=null; EMFUND5=06-06%2011%3A04%3A44@%23%24%u534E%u590F%u667A%u80DC%u5148%u950B%u80A1%u7968C@%23%24014198; EMFUND6=05-14%2010%3A14%3A35@%23%24%u534E%u590F%u4E2D%u8BC1%u52A8%u6F2B%u6E38%u620FETF%u8054%u63A5A@%23%24012768; EMFUND7=05-15%2010%3A40%3A41@%23%24%u62DB%u5546%u4F53%u80B2%u6587%u5316%u4F11%u95F2%u80A1%u7968C@%23%24015395; EMFUND8=05-20%2014%3A21%3A06@%23%24%u534E%u590F%u56FD%u8BC1%u534A%u5BFC%u4F53%u82AF%u7247ETF%u8054%u63A5C@%23%24008888; EMFUND9=06-06 11:17:46@#$%u534E%u590F%u5B89%u6CF0%u5BF9%u51B2%u7B56%u75653%u4E2A%u6708%u5B9A%u5F00%u6DF7%u5408@%23%24008856; HAList=ty-0-399401-%u4E2D%u5C0F%u76D8%2Cty-1-688325-%u8D5B%u5FAE%u5FAE%u7535%2Cty-1-000001-%u4E0A%u8BC1%u6307%u6570%2Cty-0-399001-%u6DF1%u8BC1%u6210%u6307%2Cty-1-000300-%u6CAA%u6DF1300%2Cty-0-002027-%u5206%u4F17%u4F20%u5A92%2Cty-100-KSE100-%u5DF4%u57FA%u65AF%u5766%u5361%u62C9%u5947%2Cty-100-TWII-%u53F0%u6E7E%u52A0%u6743%2Cty-0-002371-%u5317%u65B9%u534E%u521B%2Cty-0-002049-%u7D2B%u5149%u56FD%u5FAE; st_pvi=61521603029306; st_sp=2023-10-24%2009%3A53%3A57; st_inirUrl=https%3A%2F%2Fwww.baidu.com%2Flink; st_sn=54; st_psi=20240607152241752-113300300871-5429805951"
+        tt_he = {
+            "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 Edg/125.0.0.0",
+            "Cookie": tt_cookie,
+            "Referer": "https://data.eastmoney.com/zjlx/dpzjlx.html",
+        }
+
+        worth = requests.get(url=url, headers=tt_he)
+        json_data = re.search(r'\((.*)\)', worth.text).group(1)
+        json_data = json.loads(json_data)
+        turnover_num = int((json_data["data"]["diff"][0]["f6"] + json_data["data"]["diff"][1]["f6"]) // 100000000)
+        shangz = json_data["data"]["diff"][0]["f2"]
+        shangz_profit_loss = json_data["data"]["diff"][0]["f3"]
+        shenz = json_data["data"]["diff"][1]["f2"]
+        shenz_profit_loss = json_data["data"]["diff"][1]["f3"]
+        ret = {
+            "shangz": shangz,
+            "shangz_profit_loss": shangz_profit_loss,
+            "shangz_class": "card bg-danger text-white shadow" if shangz_profit_loss >= 0 else "card bg-success text-white shadow",
+            "shenz": shenz,
+            "shenz_profit_loss": shenz_profit_loss,
+            "shenz_class": "card bg-danger text-white shadow" if shenz_profit_loss >= 0 else "card bg-success text-white shadow",
+            "turnover_num": turnover_num,
+        }
+        return ret
+
     def get(self, request):
         user = request.COOKIES.get("user")
         cookie_date = request.COOKIES.get("new_date")
@@ -352,8 +390,7 @@ class Home(View, FundDb):
         fund_floatings = self._fund_floating()  # 基金涨幅
         inform_obj = Inform()
         inform_dict = inform_obj.data()  # 消息通知
-        turnover_num = self._turnover()  # 成交量
-        print(turnover_num)
+        overall_situation = self._overall_situation()  # 大盘涨幅
         ret = render(request, "index.html",
                      {"user": user,
                       'm': m, "date": date, "money": money, "now_money": now_money,
@@ -362,6 +399,7 @@ class Home(View, FundDb):
                       "textvalue": textvalue, "new_url": new_url,
                       "fund_floatings": fund_floatings,
                       "inform_dict": inform_dict,
+                      "overall_situation": overall_situation,
                       })
         ret.set_cookie("m", m), ret.set_cookie("date", date), ret.set_cookie("money", money), ret.set_cookie(
             "now_money", now_money)

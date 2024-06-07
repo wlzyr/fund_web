@@ -6,120 +6,120 @@
 <!-- Begin Page Content -->
 <div class="container-fluid">
 
-                <!-- Page Heading -->
-                <div class="d-sm-flex align-items-center justify-content-between mb-4">
-                    <h1 class="h3 mb-0 text-gray-800">基金概括</h1>
-                </div>
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">基金概括</h1>
+    </div>
 
-                <!-- Content Row -->
-                <div class="row">
+    <!-- Content Row -->
+    <div class="row">
 
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-primary shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                            倍率
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ m }}</div>
-<!--                                        <input class="h5 mb-0 font-weight-bold text-gray-800" type="text">-->
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-calendar fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                倍率
                             </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ m }}</div>
+                            <!--                                        <input class="h5 mb-0 font-weight-bold text-gray-800" type="text">-->
                         </div>
-                    </div>
-
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-success shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
-                                            预定金额
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">¥{{ money }}</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Earnings (Monthly) Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-info shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">时间
-                                        </div>
-                                        <div class="row no-gutters align-items-center">
-                                            <div class="col-auto">
-                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ date }}
-                                                </div>
-                                            </div>
-                                            <div class="col">
-                                                <div class="progress progress-sm mr-2">
-                                                    <div aria-valuemax="100" aria-valuemin="0"
-                                                         aria-valuenow="50" class="progress-bar bg-info"
-                                                         role="progressbar"
-                                                         style="width: 50%"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Pending Requests Card Example -->
-                    <div class="col-xl-3 col-md-6 mb-4">
-                        <div class="card border-left-warning shadow h-100 py-2">
-                            <div class="card-body">
-                                <div class="row no-gutters align-items-center">
-                                    <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                                            实际金额
-                                        </div>
-                                        <div class="h5 mb-0 font-weight-bold text-gray-800">¥{{ now_money }}</div>
-                                    </div>
-                                    <div class="col-auto">
-                                        <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar fa-2x text-gray-300"></i>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
 
-                <!-- Content Row -->
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                预定金额
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">¥{{ money }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-                <div class="row">
-
-                        <div class="col-xl-8 col-lg-7">
-                            <div class="card shadow mb-4">
-                                <!-- Card Header - Dropdown -->
-                                <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                    <h6 class="m-0 font-weight-bold text-primary">15天业绩走势</h6>
+        <!-- Earnings (Monthly) Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">时间
+                            </div>
+                            <div class="row no-gutters align-items-center">
+                                <div class="col-auto">
+                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{ date }}
+                                    </div>
                                 </div>
-                                <!-- Card Body -->
-                                <div class="card-body">
-                                    <div class="card-body" id="line" style="width:98%;height:320px;">
-<!--                                        width:1036px;height:320px-->
-                                        <script type="text/javascript">
+                                <div class="col">
+                                    <div class="progress progress-sm mr-2">
+                                        <div aria-valuemax="100" aria-valuemin="0"
+                                             aria-valuenow="50" class="progress-bar bg-info"
+                                             role="progressbar"
+                                             style="width: 50%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clipboard-list fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Requests Card Example -->
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                实际金额
+                            </div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">¥{{ now_money }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Row -->
+
+    <div class="row">
+
+        <div class="col-xl-8 col-lg-7">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">15天业绩走势</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body">
+                    <div class="card-body" id="line" style="width:98%;height:320px;">
+                        <!--                                        width:1036px;height:320px-->
+                        <script type="text/javascript">
                                             var chartDom = document.getElementById('line');
                                             var myChart = echarts.init(chartDom);
                                             var option;
@@ -177,23 +177,35 @@
                                               ],
                                             };
                                             option && myChart.setOption(option);
-                                        </script>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                    <!-- Pie Chart -->
-                    <div class="col-xl-4 col-lg-5">
-                        <div class="card shadow mb-4">
-                            <!-- Card Header - Dropdown -->
-                            <div
-                                    class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold text-primary">持仓比例</h6>
-                            </div>
-                            <!-- Card Body -->
-                            <div class="card-body" id="pie" style="width:98%;height:360px;">
-                                <script type="text/javascript">
+
+
+
+
+
+
+
+
+
+
+
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pie Chart -->
+        <div class="col-xl-4 col-lg-5">
+            <div class="card shadow mb-4">
+                <!-- Card Header - Dropdown -->
+                <div
+                        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold text-primary">持仓比例</h6>
+                </div>
+                <!-- Card Body -->
+                <div class="card-body" id="pie" style="width:98%;height:360px;">
+                    <script type="text/javascript">
                                     var myChart = echarts.init(document.getElementById('pie'));
                                       var option = option = {
                                                               tooltip: {
@@ -237,60 +249,125 @@
                                                               ]
                                                             };
                                     myChart.setOption(option);
-                                </script>
-                            </div>
-                        </div>
-                    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+                    </script>
                 </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Content Row -->
-                <div class="row">
+    <!-- Content Row -->
+    <div class="row">
 
-                    <!-- Content Column -->
-                    <div class="col-lg-6 mb-4">
+        <!-- Content Column -->
+        <div class="col-xl-12 col-lg-7">
 
-                        <!-- Project Card Example -->
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">基金涨幅</h6>
-                            </div>
-                            <div class="row">
-                                {% for id,fund_floating in fund_floatings.items %}
-                            <div class="col-lg-6 mb-4">
-                                <div class="{{ fund_floating.style }}">
-                                    <div class="card-body">
-                                        {{ fund_floating.name }}
-                                        <div class="text-white-50 small">{{ fund_floating.growth }}%</div>
+            <!-- Project Card Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">大盘涨幅</h6>
+                </div>
+                <div style="display: flex;flex-wrap: nowrap;margin-right: 0.015rem;margin-left: 0.15rem;margin-top: 0.75rem;">
+                    <div class="col-lg-4 mb-4">
+                        <div class="{{ overall_situation.shangz_class }}">
+                            <div class="card-body">
+                                上证指数
+                                <div class="text-white-60" style="font-size: 90%; font-weight: 400;">
+                                    {{ overall_situation.shangz }}
+                                    <div class="text-white-50 small" style="float: right;">
+                                        {{ overall_situation.shangz_profit_loss }}%
                                     </div>
                                 </div>
                             </div>
-                                {% endfor %}
                         </div>
-                        </div>
-                        </div>
-
-                    <div class="col-lg-6 mb-4">
-
-                        <!-- Illustrations -->
-                        <div class="card shadow mb-4">
-                            <div class="card-header py-3">
-                                <h6 class="m-0 font-weight-bold text-primary">最新消息</h6>
-                            </div>
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="{{ overall_situation.shenz_class }}">
                             <div class="card-body">
-                                <div class="text-center">
-<!--                                    <img alt="..." class="img-fluid px-3 px-sm-4 mt-3 mb-4"-->
-<!--                                         src="/static/img/undraw_posting_photo.svg" style="width: 25rem;">-->
+                                沪深指数
+                                <div class="text-white-60" style="font-size: 90%; font-weight: 400;">
+                                    {{ overall_situation.shenz }}
+                                    <div class="text-white-50 small" style="float: right;">
+                                        {{ overall_situation.shenz_profit_loss }}%
+                                    </div>
                                 </div>
-                                <p style="line-height: 180%">{{ textvalue }}</p>
-                                <a href="{{ new_url }}" rel="nofollow" target="_blank">详细情况</a>
+
                             </div>
                         </div>
-
-                        <!-- Approach -->
-
+                    </div>
+                    <div class="col-lg-4 mb-4">
+                        <div class="card bg-danger text-white shadow">
+                            <div class="card-body">
+                                交易量
+                                <div class="text-white-60" style="font-size: 90%; font-weight: 400;">
+                                    {{ overall_situation.turnover_num }}亿
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
             </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <!-- Content Column -->
+        <div class="col-lg-6 mb-4">
+
+            <!-- Project Card Example -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">基金涨幅</h6>
+                </div>
+                <div class="row">
+                    {% for id,fund_floating in fund_floatings.items %}
+                    <div class="col-lg-6 mb-4">
+                        <div class="{{ fund_floating.style }}">
+                            <div class="card-body">
+                                {{ fund_floating.name }}
+                                <div class="text-white-50 small">{{ fund_floating.growth }}%</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+
+            <!-- Illustrations -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">最新消息</h6>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <!--                                    <img alt="..." class="img-fluid px-3 px-sm-4 mt-3 mb-4"-->
+                        <!--                                         src="/static/img/undraw_posting_photo.svg" style="width: 25rem;">-->
+                    </div>
+                    <p style="line-height: 180%">{{ textvalue }}</p>
+                    <a href="{{ new_url }}" rel="nofollow" target="_blank">详细情况</a>
+                </div>
+            </div>
+
+            <!-- Approach -->
+
+        </div>
+    </div>
+
+</div>
 <!-- /.container-fluid -->
 {% endblock %}
